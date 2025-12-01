@@ -1,0 +1,67 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore database files (will be created during installation)
+database/*.db
+database/*.db-journal
+database/*.db-wal
+database/*.db-shm
+
+# Ignore uploaded files
+uploads/*
+!uploads/.gitkeep
+uploads/logos/*
+!uploads/logos/.gitkeep
+
+# Ignore session files
+sessions/*
+!sessions/.gitkeep
+
+# Ignore logs
+logs/*
+!logs/.gitkeep
+*.log
+
+# Ignore vendor (Composer dependencies)
+vendor/
+composer.lock
+
+# Ignore node_modules (if using npm)
+node_modules/
+package-lock.json
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+
+# Ignore temporary files
+tmp/*
+!tmp/.gitkeep
+cache/*
+!cache/.gitkeep
+
+# Ignore backup files
+*.bak
+*.backup
+*.old
+
+# Ignore OS generated files
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Ignore test files
+test_*.php
+debug.php
