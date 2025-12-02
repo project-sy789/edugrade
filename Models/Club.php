@@ -123,7 +123,7 @@ class Club
         $sql = 'SELECT c.*, u.name as teacher_name 
                 FROM clubs c
                 LEFT JOIN users u ON c.teacher_id = u.id
-                ORDER BY c.academic_year DESC, c.semester DESC, c.club_name';
+                ORDER BY c.academic_year DESC, c.club_name';
         
         if ($limit > 0) {
             $sql .= ' LIMIT :limit OFFSET :offset';
@@ -134,10 +134,6 @@ class Club
             $clubs = $stmt->fetchAll();
         } else {
             $clubs = $this->db->fetchAll($sql);
-        }
-        
-        foreach ($clubs as &$club) {
-            $club['class_levels'] = json_decode($club['class_levels'], true);
         }
         
         return $clubs;
