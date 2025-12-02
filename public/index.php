@@ -203,7 +203,11 @@ try {
                         $courseController->manageGradeCategories($courseId);
                     }
                 } elseif ($courseAction === 'enroll') {
-                    if ($requestMethod === 'POST') {
+                    $enrollAction = $parts[4] ?? null;
+                    
+                    if ($enrollAction === 'remove') {
+                        $courseController->removeEnrollment($courseId);
+                    } elseif ($requestMethod === 'POST') {
                         $courseController->enrollStudents($courseId);
                     } else {
                         $courseController->enrollStudentsPage($courseId);
