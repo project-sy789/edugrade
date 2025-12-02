@@ -1,4 +1,11 @@
-# Simple redirect to public folder
-RewriteEngine On
-RewriteRule ^$ public/ [L]
-RewriteRule (.*) public/$1 [L]
+# Redirect to public folder (except install.php)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Don't redirect install.php
+    RewriteCond %{REQUEST_URI} !^/install\.php$
+    
+    # Redirect everything else to public folder
+    RewriteRule ^$ public/ [L]
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
