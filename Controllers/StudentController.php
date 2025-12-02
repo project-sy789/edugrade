@@ -234,6 +234,13 @@ class StudentController extends BaseController
         
         $this->requireCsrfToken();
         
+        // Check if PhpSpreadsheet is available
+        if (!class_exists('PhpOffice\PhpSpreadsheet\IOFactory')) {
+            $this->setFlash('error', 'ระบบนำเข้า XLSX ยังไม่พร้อมใช้งาน กรุณาติดตั้ง PhpSpreadsheet library ผ่าน Composer หรือติดต่อผู้ดูแลระบบ');
+            $this->redirect('/teacher/students/upload');
+            return;
+        }
+        
         try {
             // Check if file was uploaded
             if (!isset($_FILES['xlsx_file']) || $_FILES['xlsx_file']['error'] !== UPLOAD_ERR_OK) {
