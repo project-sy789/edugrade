@@ -173,14 +173,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    alert(data.message || 'ลบนักเรียนสำเร็จ');
                     location.reload();
                 } else {
-                    alert('เกิดข้อผิดพลาด: ' + data.message);
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถลบนักเรียนได้'));
                 }
             })
             .catch(error => {
-                alert('เกิดข้อผิดพลาด: ' + error.message);
+                console.error('Delete error:', error);
+                alert('เกิดข้อผิดพลาด: ' + (error.message || 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์'));
             });
         }
     </script>
