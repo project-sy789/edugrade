@@ -304,8 +304,8 @@ class CourseController extends BaseController
                 throw new \Exception('ไม่พบข้อมูลการลงทะเบียน (ID: ' . $enrollmentIdRaw . ')');
             }
             
-            // Delete enrollment using direct query
-            $db = $this->courseModel->getDatabase();
+            // Delete enrollment using Database instance
+            $db = \App\Models\Database::getInstance();
             $conn = $db->getConnection();
             
             // Use PDO::PARAM_INT explicitly
