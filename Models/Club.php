@@ -417,7 +417,7 @@ class Club
      * Get enrollment summary for all students
      * 
      * @param string $academicYear Academic year
-     * @param int $semester Semester
+     * @param int $semester Semester (not used - clubs don't have semester)
      * @param string $classLevel Optional class level filter
      * @param string $classroom Optional classroom filter
      * @return array Array of students with enrollment status
@@ -429,14 +429,12 @@ class Club
                 FROM students s
                 LEFT JOIN club_enrollments ce ON s.id = ce.student_id AND ce.status = 'active'
                 LEFT JOIN clubs c ON ce.club_id = c.id 
-                    AND c.academic_year = :academic_year 
-                    AND c.semester = :semester
+                    AND c.academic_year = :academic_year
                 LEFT JOIN users u ON c.teacher_id = u.id
                 WHERE 1=1";
         
         $params = [
-            ':academic_year' => $academicYear,
-            ':semester' => $semester
+            ':academic_year' => $academicYear
         ];
         
         if ($classLevel !== '') {
