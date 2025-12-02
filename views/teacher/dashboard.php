@@ -14,7 +14,9 @@
     <div class="header">
         <div class="container">
             <a href="/teacher/dashboard" class="logo">
-                <img src="<?php echo logoPath(); ?>" alt="Logo" style="height: 40px; margin-right: 10px; vertical-align: middle;">
+                <?php if (logoPath()): ?>
+                    <img src="<?php echo logoPath(); ?>" alt="Logo" style="height: 40px; margin-right: 10px; vertical-align: middle;">
+                <?php endif; ?>
                 <?php echo siteName(); ?>
             </a>
             <nav>
