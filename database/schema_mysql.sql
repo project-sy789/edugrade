@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `students`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `settings`;
 DROP TABLE IF EXISTS `clubs`;
-DROP TABLE IF EXISTS `club_members`;
+DROP TABLE IF EXISTS `club_enrollments`;
 
 SET FOREIGN_KEY_CHECKS=1;
 
@@ -148,13 +148,15 @@ CREATE TABLE `clubs` (
     FOREIGN KEY (`teacher_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Club members table
-CREATE TABLE `club_members` (
+-- Club enrollments table
+CREATE TABLE `club_enrollments` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `club_id` INT NOT NULL,
     `student_id` INT NOT NULL,
-    `joined_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY `unique_membership` (`club_id`, `student_id`),
+    `grade` DECIMAL(5,2),
+    `status` VARCHAR(20) DEFAULT 'active',
+    `enrolled_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_enrollment` (`club_id`, `student_id`),
     INDEX `idx_club` (`club_id`),
     INDEX `idx_student` (`student_id`),
     FOREIGN KEY (`club_id`) REFERENCES `clubs`(`id`) ON DELETE CASCADE,
