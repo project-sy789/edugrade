@@ -30,9 +30,7 @@ class Club
             'club_name' => $data['club_name'],
             'description' => $data['description'] ?? null,
             'teacher_id' => $data['teacher_id'],
-            'academic_year' => $data['academic_year'],
-            'class_levels' => json_encode($data['class_levels'] ?? []),
-            'max_students' => $data['max_students'] ?? 30
+            'academic_year' => $data['academic_year']
         ]);
     }
     
@@ -45,27 +43,6 @@ class Club
      */
     public function update($id, $data)
     {
-        $updateData = [];
-        
-        if (isset($data['club_name'])) {
-            $updateData['club_name'] = $data['club_name'];
-        }
-        if (isset($data['description'])) {
-            $updateData['description'] = $data['description'];
-        }
-        if (isset($data['teacher_id'])) {
-            $updateData['teacher_id'] = $data['teacher_id'];
-        }
-        if (isset($data['academic_year'])) {
-            $updateData['academic_year'] = $data['academic_year'];
-        }
-        if (isset($data['class_levels'])) {
-            $updateData['class_levels'] = json_encode($data['class_levels']);
-        }
-        if (isset($data['max_students'])) {
-            $updateData['max_students'] = $data['max_students'];
-        }
-        
         if (empty($updateData)) {
             return 0;
         }
