@@ -69,8 +69,8 @@ function logoPath()
         return '/' . ltrim($logoSetting, '/');
     }
     
-    // Otherwise return default
-    return '/images/logo.png';
+    // Return empty string if no logo (avoid 404)
+    return '';
 }
 
 /**
