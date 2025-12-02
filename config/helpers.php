@@ -62,7 +62,15 @@ function schoolName()
  */
 function logoPath()
 {
-    return setting('logo_path', '/images/logo.png');
+    $logoSetting = setting('site_logo');
+    
+    // If logo is set and file exists, return it
+    if ($logoSetting && file_exists(__DIR__ . '/../' . $logoSetting)) {
+        return '/' . ltrim($logoSetting, '/');
+    }
+    
+    // Otherwise return default
+    return '/images/logo.png';
 }
 
 /**
