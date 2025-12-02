@@ -98,12 +98,12 @@ class SettingsController extends BaseController
             }
             
             // Delete old logo
-            $oldPath = $this->settingsModel->get('logo_path');
+            $oldPath = $this->settingsModel->get('site_logo');
             if ($oldPath && $oldPath !== '/images/logo.png') {
                 $this->settingsModel->deleteFile($oldPath);
             }
             
-            $this->settingsModel->set('logo_path', $newPath);
+            $this->settingsModel->set('site_logo', $newPath);
             
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'อัปโหลด Logo สำเร็จ'];
             $this->redirect('/admin/settings');

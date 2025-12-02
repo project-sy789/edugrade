@@ -62,7 +62,7 @@ function schoolName()
  */
 function logoPath()
 {
-    $logoSetting = setting('logo_path');
+    $logoSetting = setting('site_logo');
     
     // If logo is set and file exists, return it
     if ($logoSetting && file_exists(__DIR__ . '/../public' . $logoSetting)) {
