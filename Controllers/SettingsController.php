@@ -144,12 +144,12 @@ class SettingsController extends BaseController
             }
             
             // Delete old favicon
-            $oldPath = $this->settingsModel->get('favicon_path');
+            $oldPath = $this->settingsModel->get('site_favicon');
             if ($oldPath && $oldPath !== '/images/favicon.ico') {
                 $this->settingsModel->deleteFile($oldPath);
             }
             
-            $this->settingsModel->set('favicon_path', $newPath);
+            $this->settingsModel->set('site_favicon', $newPath);
             
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'อัปโหลด Favicon สำเร็จ'];
             $this->redirect('/admin/settings');

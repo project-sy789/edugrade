@@ -123,8 +123,8 @@
                 <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
                     <div>
                         <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 1rem; text-align: center; background: var(--bg-light);">
-                            <?php if (!empty($settings['favicon_path']) && file_exists(__DIR__ . '/../../../public' . $settings['favicon_path'])): ?>
-                                <img src="<?php echo htmlspecialchars($settings['favicon_path']); ?>" 
+                            <?php if (!empty($settings['site_favicon']) && file_exists(__DIR__ . '/../../../public' . $settings['site_favicon'])): ?>
+                                <img src="<?php echo htmlspecialchars($settings['site_favicon']); ?>" 
                                      alt="Favicon" 
                                      style="max-width: 64px; max-height: 64px; object-fit: contain;">
                             <?php else: ?>
