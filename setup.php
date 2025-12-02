@@ -55,18 +55,27 @@
         </div>
         <div class="content">
             <?php
+            // Suppress errors that might cause 500
+            @error_reporting(0);
+            @ini_set('display_errors', 0);
+            
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                echo '<div style="font-family: monospace; background: #f0f0f0; padding: 15px; margin-bottom: 20px; border-radius: 5px;">';
+                
                 try {
                     // Create folders
+                    echo "📁 กำลังสร้างโฟลเดอร์...<br>";
                     $folders = ['database', 'uploads', 'uploads/logos', 'sessions', 'logs'];
                     foreach ($folders as $folder) {
                         if (!file_exists($folder)) {
                             @mkdir($folder, 0755, true);
                         }
                         @chmod($folder, 0755);
+                        echo "✓ $folder<br>";
                     }
                     
                     // Create database
+                    echo "<br>🗄️ กำลังสร้างฐานข้อมูล...<br>";
                     $dbFile = 'database/score.db';
                     if (file_exists($dbFile)) {
                         @unlink($dbFile);
@@ -74,22 +83,36 @@
                     
                     $schemaFile = 'database/schema_sqlite.sql';
                     if (!file_exists($schemaFile)) {
-                        throw new Exception("ไม่พบไฟล์ schema");
+                        throw new Exception("ไม่พบไฟล์ schema_sqlite.sql");
                     }
                     
                     $schema = file_get_contents($schemaFile);
                     $db = new SQLite3($dbFile);
-                    $db->exec($schema);
+                    $result = @$db->exec($schema);
+                    
+                    if ($result === false) {
+                        throw new Exception("ไม่สามารถสร้างฐานข้อมูลได้: " . $db->lastErrorMsg());
+                    }
+                    echo "✓ สร้างฐานข้อมูลสำเร็จ<br>";
                     
                     // Create admin user
+                    echo "<br>👤 กำลังสร้างผู้ดูแลระบบ...<br>";
                     $password = password_hash('password', PASSWORD_BCRYPT);
                     $stmt = $db->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)");
                     $stmt->bindValue(1, 'admin', SQLITE3_TEXT);
                     $stmt->bindValue(2, $password, SQLITE3_TEXT);
                     $stmt->bindValue(3, 'ผู้ดูแลระบบ', SQLITE3_TEXT);
                     $stmt->bindValue(4, 'admin', SQLITE3_TEXT);
-                    $stmt->execute();
+                    $result = @$stmt->execute();
+                    
+                    if ($result === false) {
+                        throw new Exception("ไม่สามารถสร้างผู้ดูแลระบบได้");
+                    }
+                    
                     $db->close();
+                    echo "✓ สร้างผู้ดูแลระบบสำเร็จ<br>";
+                    
+                    echo '</div>';
                     
                     echo '<div class="success">';
                     echo '<h2 style="margin-bottom: 15px;">✅ ติดตั้งสำเร็จ!</h2>';
@@ -104,6 +127,7 @@
                     echo '</div>';
                     
                 } catch (Exception $e) {
+                    echo '</div>';
                     echo '<div class="error">❌ เกิดข้อผิดพลาด: ' . htmlspecialchars($e->getMessage()) . '</div>';
                     echo '<button class="btn" onclick="location.reload()">ลองอีกครั้ง</button>';
                 }
