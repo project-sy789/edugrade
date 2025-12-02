@@ -294,23 +294,38 @@ class CourseController extends BaseController
         $this->requireCsrfToken();
         
         try {
-            $enrollmentId = (int)$this->post('enrollment_id');
+            $enrollmentIdRaw = $this->post('enrollment_id');
+            error_log("Raw enrollment_id: " . var_export($enrollmentIdRaw, true));
             
-            if (empty($enrollmentId)) {
-                throw new \Exception('ไม่พบข้อมูลการลงทะเบียน');
+            $enrollmentId = (int)$enrollmentIdRaw;
+            error_log("Converted enrollment_id: " . $enrollmentId);
+            
+            if ($enrollmentId <= 0) {
+                throw new \Exception('ไม่พบข้อมูลการลงทะเบียน (ID: ' . $enrollmentIdRaw . ')');
             }
             
             // Delete enrollment using direct query
             $db = $this->courseModel->getDatabase();
-            $stmt = $db->getConnection()->prepare('DELETE FROM course_enrollments WHERE id = ?');
-            $stmt->execute([$enrollmentId]);
+            $conn = $db->getConnection();
             
-            if ($stmt->rowCount() === 0) {
-                throw new \Exception('ไม่พบข้อมูลการลงทะเบียนที่ต้องการลบ');
+            // Use PDO::PARAM_INT explicitly
+            $stmt = $conn->prepare('DELETE FROM course_enrollments WHERE id = ?');
+            $stmt->bindValue(1, $enrollmentId, \PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $rowCount = $stmt->rowCount();
+            error_log("Rows deleted: " . $rowCount);
+            
+            if ($rowCount === 0) {
+                throw new \Exception('ไม่พบข้อมูลการลงทะเบียนที่ต้องการลบ (ID: ' . $enrollmentId . ')');
             }
             
             $this->jsonResponse(['success' => true, 'message' => 'ลบนักเรียนออกจากรายวิชาสำเร็จ']);
+        } catch (\PDOException $e) {
+            error_log("PDO Error in removeEnrollment: " . $e->getMessage());
+            $this->jsonResponse(['success' => false, 'message' => 'Database Error: ' . $e->getMessage()], 400);
         } catch (\Exception $e) {
+            error_log("Error in removeEnrollment: " . $e->getMessage());
             $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
