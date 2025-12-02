@@ -284,4 +284,32 @@ class CourseController extends BaseController
         
         $this->redirect('/teacher/courses/' . $courseId . '/enroll');
     }
+    
+    /**
+     * Remove student from course
+     */
+    public function removeEnrollment($courseId)
+    {
+        $this->requireTeacher();
+        $this->requireCsrfToken();
+        
+        try {
+            $enrollmentId = $this->post('enrollment_id');
+            
+            if (empty($enrollmentId)) {
+                throw new \Exception('ไม่พบข้อมูลการลงทะเบียน');
+            }
+            
+            // Delete enrollment
+            $this->courseModel->getDatabase()->delete(
+                'course_enrollments',
+                'id = :id',
+                [':id' => $enrollmentId]
+            );
+            
+            $this->jsonResponse(['success' => true, 'message' => 'ลบนักเรียนออกจากรายวิชาสำเร็จ']);
+        } catch (\Exception $e) {
+            $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 400);
+        }
+    }
 }

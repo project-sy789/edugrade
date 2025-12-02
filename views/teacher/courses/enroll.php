@@ -67,6 +67,7 @@
                             <th>รหัสนักเรียน</th>
                             <th>ชื่อ-นามสกุล</th>
                             <th>ชั้น/ห้อง</th>
+                            <th style="width: 100px;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,6 +76,9 @@
                                 <td><?php echo htmlspecialchars($student['student_code']); ?></td>
                                 <td><?php echo htmlspecialchars($student['name']); ?></td>
                                 <td><?php echo htmlspecialchars($student['class_level'] . '/' . $student['classroom']); ?></td>
+                                <td>
+                                    <button onclick="removeStudent(<?php echo $student['enrollment_id']; ?>)" class="btn btn-sm btn-danger">ลบ</button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -212,6 +216,35 @@
                 cb.closest('.student-item').style.display !== 'none'
             );
             document.getElementById('selectedCount').textContent = checkboxes.length;
+        }
+        
+        // Remove student from course
+        function removeStudent(enrollmentId) {
+            if (!confirm('คุณแน่ใจหรือไม่ที่จะลบนักเรียนคนนี้ออกจากรายวิชา?')) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
+            formData.append('enrollment_id', enrollmentId);
+            
+            fetch(window.location.pathname + '/remove', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message || 'ลบนักเรียนออกจากรายวิชาสำเร็จ');
+                    location.reload();
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถลบนักเรียนได้'));
+                }
+            })
+            .catch(error => {
+                console.error('Remove error:', error);
+                alert('เกิดข้อผิดพลาด: ' + (error.message || 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์'));
+            });
         }
         
         // Initialize count on page load

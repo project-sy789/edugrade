@@ -208,6 +208,8 @@ try {
                     } else {
                         $courseController->enrollStudentsPage($courseId);
                     }
+                } elseif ($courseAction === 'remove') {
+                    $courseController->removeEnrollment($courseId);
                 } elseif ($courseAction === 'grades') {
                     $gradeController = new GradeController();
                     if ($parts[4] ?? '' === 'summary') {
