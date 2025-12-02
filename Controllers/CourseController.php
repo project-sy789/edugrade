@@ -300,12 +300,14 @@ class CourseController extends BaseController
                 throw new \Exception('ไม่พบข้อมูลการลงทะเบียน');
             }
             
-            // Delete enrollment
-            $this->courseModel->getDatabase()->delete(
-                'course_enrollments',
-                'id = :id',
-                [':id' => $enrollmentId]
-            );
+            // Delete enrollment using direct query
+            $db = $this->courseModel->getDatabase();
+            $stmt = $db->getConnection()->prepare('DELETE FROM course_enrollments WHERE id = ?');
+            $stmt->execute([$enrollmentId]);
+            
+            if ($stmt->rowCount() === 0) {
+                throw new \Exception('ไม่พบข้อมูลการลงทะเบียนที่ต้องการลบ');
+            }
             
             $this->jsonResponse(['success' => true, 'message' => 'ลบนักเรียนออกจากรายวิชาสำเร็จ']);
         } catch (\Exception $e) {
