@@ -83,8 +83,8 @@
                 <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
                     <div>
                         <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 1rem; text-align: center; background: var(--bg-light);">
-                            <?php if (!empty($settings['logo_path']) && file_exists(__DIR__ . '/../../../public' . $settings['logo_path'])): ?>
-                                <img src="<?php echo htmlspecialchars($settings['logo_path']); ?>" 
+                            <?php if (!empty($settings['site_logo']) && file_exists(__DIR__ . '/../../../public' . $settings['site_logo'])): ?>
+                                <img src="<?php echo htmlspecialchars($settings['site_logo']); ?>" 
                                      alt="Logo" 
                                      style="max-width: 100%; max-height: 150px; object-fit: contain;">
                             <?php else: ?>
