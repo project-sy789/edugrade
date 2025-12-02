@@ -30,7 +30,10 @@ class Club
             'club_name' => $data['club_name'],
             'description' => $data['description'] ?? null,
             'teacher_id' => $data['teacher_id'],
-            'academic_year' => $data['academic_year']
+            'academic_year' => $data['academic_year'],
+            'semester' => $data['semester'] ?? '1',
+            'class_levels' => json_encode($data['class_levels'] ?? []),
+            'max_students' => $data['max_students'] ?? 30
         ]);
     }
     
@@ -49,6 +52,16 @@ class Club
             'teacher_id' => $data['teacher_id'],
             'academic_year' => $data['academic_year']
         ];
+        
+        if (isset($data['semester'])) {
+            $updateData['semester'] = $data['semester'];
+        }
+        if (isset($data['class_levels'])) {
+            $updateData['class_levels'] = json_encode($data['class_levels']);
+        }
+        if (isset($data['max_students'])) {
+            $updateData['max_students'] = $data['max_students'];
+        }
         
         return $this->db->update('clubs', $updateData, 'id = :id', [':id' => $id]);
     }

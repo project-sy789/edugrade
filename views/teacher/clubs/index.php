@@ -68,6 +68,7 @@
                             <th>ชื่อชุมนุม</th>
                             <th>ครูผู้สอน</th>
                             <th>ปีการศึกษา</th>
+                            <th>ภาคเรียน</th>
                             <th>จำนวนนักเรียน</th>
                             <th style="width: 200px; text-align: center;">จัดการ</th>
                         </tr>
@@ -82,7 +83,8 @@
                                 <td><?php echo htmlspecialchars($club['club_name']); ?></td>
                                 <td><?php echo htmlspecialchars($club['teacher_name']); ?></td>
                                 <td><?php echo htmlspecialchars($club['academic_year']); ?></td>
-                                <td><?php echo $club['enrolled_count'] ?? 0; ?> คน</td>
+                                <td><?php echo htmlspecialchars($club['semester'] ?? '1'); ?></td>
+                                <td><?php echo ($club['enrolled_count'] ?? 0); ?> / <?php echo ($club['max_students'] ?? 30); ?></td>
                                 <td style="text-align: center;">
                                     <div style="display: flex; gap: 0.25rem; justify-content: center; flex-wrap: wrap;">
                                         <a href="/teacher/clubs/<?php echo $club['id']; ?>/members" class="btn btn-sm btn-primary">รายชื่อ</a>
