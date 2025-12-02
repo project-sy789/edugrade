@@ -79,7 +79,7 @@
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-            
+            <?php endif; ?>
             
             <hr style="margin: 2rem 0;">
             
