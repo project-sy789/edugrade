@@ -163,11 +163,10 @@ class Club
             'SELECT c.*, u.name as teacher_name 
              FROM clubs c
              LEFT JOIN users u ON c.teacher_id = u.id
-             WHERE c.academic_year = :year AND c.semester = :semester
+             WHERE c.academic_year = :year
              ORDER BY c.club_name',
             [
-                ':year' => $academicYear,
-                ':semester' => $semester
+                ':year' => $academicYear
             ]
         );
         
@@ -356,12 +355,10 @@ class Club
              JOIN clubs c ON ce.club_id = c.id
              LEFT JOIN users u ON c.teacher_id = u.id
              WHERE ce.student_id = :student_id 
-               AND c.academic_year = :year 
-               AND c.semester = :semester',
+               AND c.academic_year = :year',
             [
                 ':student_id' => $studentId,
-                ':year' => $academicYear,
-                ':semester' => $semester
+                ':year' => $academicYear
             ]
         );
         
