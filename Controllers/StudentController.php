@@ -212,6 +212,76 @@ class StudentController extends BaseController
     }
     
     /**
+     * Show paste import page
+     */
+    public function pastePage()
+    {
+        $this->requireTeacher();
+        $this->render('teacher/students/paste');
+    }
+    
+    /**
+     * Handle paste import
+     */
+    public function pasteImport()
+    {
+        $this->requireTeacher();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/teacher/students/paste');
+            return;
+        }
+        
+        $this->requireCsrfToken();
+        
+        try {
+            $pasteData = $this->post('paste_data');
+            
+            if (empty($pasteData)) {
+                throw new \Exception('กรุณาวางข้อมูลที่ต้องการนำเข้า');
+            }
+            
+            // Parse pasted data
+            $lines = explode("\n", $pasteData);
+            $students = [];
+            
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (empty($line)) continue;
+                
+                // Split by tab
+                $cols = explode("\t", $line);
+                
+                // Need at least 5 columns (student_code, id_card, name, class_level, classroom)
+                if (count($cols) < 5) continue;
+                
+                $students[] = [
+                    'student_code' => trim($cols[0]),
+                    'id_card' => trim($cols[1]),
+                    'name' => trim($cols[2]),
+                    'class_level' => trim($cols[3]),
+                    'classroom' => trim($cols[4]),
+                    'notes' => isset($cols[5]) ? trim($cols[5]) : null
+                ];
+            }
+            
+            if (empty($students)) {
+                throw new \Exception('ไม่พบข้อมูลนักเรียนที่ถูกต้อง กรุณาตรวจสอบรูปแบบข้อมูล');
+            }
+            
+            // Bulk insert
+            $result = $this->studentModel->bulkInsert($students);
+            
+            $this->setFlash('success', "นำเข้าข้อมูลสำเร็จ {$result['success']} คน จากทั้งหมด {$result['total']} คน");
+            $this->redirect('/teacher/students');
+            
+        } catch (\Exception $e) {
+            $this->setFlash('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+            $this->redirect('/teacher/students/paste');
+        }
+    }
+    
+    /**
      * Show XLSX upload page
      */
     public function uploadPage()

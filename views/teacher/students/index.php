@@ -55,6 +55,7 @@
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <h2 style="margin: 0;">จัดการนักเรียน</h2>
                 <div style="display: flex; gap: 0.5rem;">
+                    <a href="/teacher/students/paste" class="btn btn-secondary">📋 Copy-Paste</a>
                     <a href="/teacher/students/upload" class="btn btn-secondary">📥 นำเข้า XLSX</a>
                     <a href="/teacher/students/create" class="btn btn-primary">➕ เพิ่มนักเรียน</a>
                 </div>

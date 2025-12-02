@@ -119,6 +119,14 @@ try {
                 $studentController->delete($id);
             } elseif ($subAction === 'bulk-delete') {
                 $studentController->bulkDelete();
+            } elseif ($subAction === 'paste') {
+                if ($requestMethod === 'POST') {
+                    $studentController->pasteImport();
+                } else {
+                    $studentController->pastePage();
+                }
+            } elseif ($subAction === 'paste-import') {
+                $studentController->pasteImport();
             } elseif ($subAction === 'upload') {
                 if ($requestMethod === 'POST') {
                     $studentController->uploadXlsx();
