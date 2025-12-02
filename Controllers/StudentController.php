@@ -176,6 +176,42 @@ class StudentController extends BaseController
     }
     
     /**
+     * Bulk delete students
+     */
+    public function bulkDelete()
+    {
+        $this->requireTeacher();
+        $this->requireCsrfToken();
+        
+        try {
+            $idsJson = $this->post('ids');
+            $ids = json_decode($idsJson, true);
+            
+            if (empty($ids) || !is_array($ids)) {
+                throw new \Exception('ไม่พบรายการนักเรียนที่ต้องการลบ');
+            }
+            
+            $successCount = 0;
+            foreach ($ids as $id) {
+                try {
+                    $this->studentModel->delete($id);
+                    $successCount++;
+                } catch (\Exception $e) {
+                    // Continue deleting others even if one fails
+                    error_log("Failed to delete student ID {$id}: " . $e->getMessage());
+                }
+            }
+            
+            $this->jsonResponse([
+                'success' => true, 
+                'message' => "ลบนักเรียนสำเร็จ {$successCount} คน จากทั้งหมด " . count($ids) . " คน"
+            ]);
+        } catch (\Exception $e) {
+            $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 400);
+        }
+    }
+    
+    /**
      * Show XLSX upload page
      */
     public function uploadPage()

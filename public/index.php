@@ -117,6 +117,8 @@ try {
             } elseif ($subAction === 'delete') {
                 $id = $parts[3] ?? null;
                 $studentController->delete($id);
+            } elseif ($subAction === 'bulk-delete') {
+                $studentController->bulkDelete();
             } elseif ($subAction === 'upload') {
                 if ($requestMethod === 'POST') {
                     $studentController->uploadXlsx();

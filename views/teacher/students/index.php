@@ -52,28 +52,38 @@
         <?php endif; ?>
         
         <div class="card">
-            <div class="card-header">
-                <h2>จัดการนักเรียน</h2>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">จัดการนักเรียน</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="/teacher/students/upload" class="btn btn-secondary">📥 นำเข้า XLSX</a>
+                    <a href="/teacher/students/create" class="btn btn-primary">➕ เพิ่มนักเรียน</a>
+                </div>
             </div>
             
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
-                <div style="display: flex; gap: 1rem; flex: 1; flex-wrap: wrap;">
-                    <form method="GET" action="/teacher/students" style="flex: 1; min-width: 250px;">
+            <!-- Filters Section -->
+            <div style="padding: 1.5rem; background: var(--bg-light); border-bottom: 1px solid var(--border);">
+                <div style="display: grid; grid-template-columns: 1fr auto auto auto; gap: 0.75rem; align-items: center;">
+                    <!-- Search Box -->
+                    <form method="GET" action="/teacher/students">
                         <input type="text" 
                                name="search" 
-                               placeholder="ค้นหา (รหัส, ชื่อ, เลขบัตรประชาชน)" 
+                               placeholder="🔍 ค้นหา (รหัส, ชื่อ, เลขบัตรประชาชน)" 
                                value="<?php echo htmlspecialchars($search ?? ''); ?>" 
                                class="form-control"
                                style="width: 100%;">
                     </form>
                     
-                    <form method="GET" action="/teacher/students" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <!-- Class Level Filter -->
+                    <form method="GET" action="/teacher/students">
                         <?php if (!empty($search)): ?>
                             <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
                         <?php endif; ?>
+                        <?php if (!empty($classroom)): ?>
+                            <input type="hidden" name="classroom" value="<?php echo htmlspecialchars($classroom); ?>">
+                        <?php endif; ?>
                         
-                        <select name="class_level" class="form-control" onchange="this.form.submit()" style="min-width: 120px;">
-                            <option value="">ทุกระดับชั้น</option>
+                        <select name="class_level" class="form-control" onchange="this.form.submit()" style="min-width: 140px;">
+                            <option value="">📚 ทุกระดับชั้น</option>
                             <option value="ม.1" <?php echo ($classLevel ?? '') === 'ม.1' ? 'selected' : ''; ?>>ม.1</option>
                             <option value="ม.2" <?php echo ($classLevel ?? '') === 'ม.2' ? 'selected' : ''; ?>>ม.2</option>
                             <option value="ม.3" <?php echo ($classLevel ?? '') === 'ม.3' ? 'selected' : ''; ?>>ม.3</option>
@@ -81,26 +91,38 @@
                             <option value="ม.5" <?php echo ($classLevel ?? '') === 'ม.5' ? 'selected' : ''; ?>>ม.5</option>
                             <option value="ม.6" <?php echo ($classLevel ?? '') === 'ม.6' ? 'selected' : ''; ?>>ม.6</option>
                         </select>
+                    </form>
+                    
+                    <!-- Classroom Filter -->
+                    <form method="GET" action="/teacher/students">
+                        <?php if (!empty($search)): ?>
+                            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                        <?php endif; ?>
+                        <?php if (!empty($classLevel)): ?>
+                            <input type="hidden" name="class_level" value="<?php echo htmlspecialchars($classLevel); ?>">
+                        <?php endif; ?>
                         
-                        <select name="classroom" class="form-control" onchange="this.form.submit()" style="min-width: 100px;">
-                            <option value="">ทุกห้อง</option>
+                        <select name="classroom" class="form-control" onchange="this.form.submit()" style="min-width: 120px;">
+                            <option value="">🏫 ทุกห้อง</option>
                             <?php for ($i = 1; $i <= 15; $i++): ?>
-                                <option value="<?php echo $i; ?>" <?php echo ($classroom ?? '') == $i ? 'selected' : ''; ?>><?php echo $i; ?></option>
+                                <option value="<?php echo $i; ?>" <?php echo ($classroom ?? '') == $i ? 'selected' : ''; ?>>ห้อง <?php echo $i; ?></option>
                             <?php endfor; ?>
                         </select>
-                        
-                        <?php if (!empty($classLevel) || !empty($classroom)): ?>
-                            <a href="/teacher/students<?php echo !empty($search) ? '?search=' . urlencode($search) : ''; ?>" 
-                               class="btn btn-secondary" 
-                               style="white-space: nowrap;">ล้างตัวกรอง</a>
-                        <?php endif; ?>
                     </form>
+                    
+                    <!-- Clear Filter Button -->
+                    <?php if (!empty($classLevel) || !empty($classroom) || !empty($search)): ?>
+                        <a href="/teacher/students" 
+                           class="btn btn-secondary" 
+                           style="white-space: nowrap;">🔄 ล้างตัวกรอง</a>
+                    <?php endif; ?>
                 </div>
-                
-                <div style="display: flex; gap: 0.5rem;">
-                    <a href="/teacher/students/upload" class="btn btn-secondary">นำเข้า XLSX</a>
-                    <a href="/teacher/students/create" class="btn btn-primary">เพิ่มนักเรียน</a>
-                </div>
+            </div>
+            
+            <!-- Bulk Actions Bar -->
+            <div id="bulkActionsBar" style="display: none; padding: 1rem 1.5rem; background: #fff3cd; border-bottom: 1px solid var(--border); align-items: center; justify-content: space-between;">
+                <span id="selectedCount" style="font-weight: 500;">เลือก 0 คน</span>
+                <button onclick="bulkDelete()" class="btn btn-danger">🗑️ ลบที่เลือก</button>
             </div>
             
             <?php if (empty($students)): ?>
@@ -111,6 +133,9 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                            </th>
                             <th>รหัสนักเรียน</th>
                             <th>ชื่อ-นามสกุล</th>
                             <th>ชั้น</th>
@@ -123,6 +148,9 @@
                     <tbody>
                         <?php foreach ($students as $student): ?>
                             <tr>
+                                <td>
+                                    <input type="checkbox" class="student-checkbox" value="<?php echo $student['id']; ?>" onchange="updateBulkActions()">
+                                </td>
                                 <td><?php echo htmlspecialchars($student['student_code']); ?></td>
                                 <td><?php echo htmlspecialchars($student['name']); ?></td>
                                 <td><?php echo htmlspecialchars($student['class_level']); ?></td>
@@ -188,6 +216,70 @@
     
     <script src="/js/main.js"></script>
     <script>
+        // Toggle select all checkboxes
+        function toggleSelectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateBulkActions();
+        }
+        
+        // Update bulk actions bar visibility and count
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+            const bulkBar = document.getElementById('bulkActionsBar');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectAll = document.getElementById('selectAll');
+            
+            if (checkboxes.length > 0) {
+                bulkBar.style.display = 'flex';
+                selectedCount.textContent = `เลือก ${checkboxes.length} คน`;
+            } else {
+                bulkBar.style.display = 'none';
+            }
+            
+            // Update select all checkbox state
+            const allCheckboxes = document.querySelectorAll('.student-checkbox');
+            selectAll.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;
+        }
+        
+        // Bulk delete selected students
+        function bulkDelete() {
+            const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (ids.length === 0) {
+                alert('กรุณาเลือกนักเรียนที่ต้องการลบ');
+                return;
+            }
+            
+            if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบนักเรียน ${ids.length} คน?`)) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
+            formData.append('ids', JSON.stringify(ids));
+            
+            fetch('/teacher/students/bulk-delete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message || `ลบนักเรียน ${ids.length} คนสำเร็จ`);
+                    location.reload();
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถลบนักเรียนได้'));
+                }
+            })
+            .catch(error => {
+                console.error('Bulk delete error:', error);
+                alert('เกิดข้อผิดพลาด: ' + (error.message || 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์'));
+            });
+        }
+        
+        // Single delete function
         function deleteStudent(id) {
             if (!confirm('คุณแน่ใจหรือไม่ที่จะลบนักเรียนคนนี้?')) {
                 return;
