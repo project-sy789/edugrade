@@ -294,7 +294,7 @@ class CourseController extends BaseController
         $this->requireCsrfToken();
         
         try {
-            $enrollmentId = $this->post('enrollment_id');
+            $enrollmentId = (int)$this->post('enrollment_id');
             
             if (empty($enrollmentId)) {
                 throw new \Exception('ไม่พบข้อมูลการลงทะเบียน');
