@@ -150,7 +150,7 @@
                         
                         <?php if (count($allStudents) === count($enrolledIds)): ?>
                             <p style="color: var(--text-light);">นักเรียนทุกคนลงทะเบียนแล้ว</p>
-                        
+                        <?php endif; ?>
                     </div>
                 </div>
                 
