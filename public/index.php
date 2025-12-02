@@ -10,6 +10,10 @@ require_once __DIR__ . '/../config/config.php';
 
 // Manual autoloader (no Composer needed)
 spl_autoload_register(function ($class) {
+    // Convert namespace to file path
+    // App\Controllers\AuthController -> Controllers/AuthController.php
+    // App\Models\User -> Models/User.php
+    
     $prefix = 'App\\';
     $base_dir = __DIR__ . '/../';
     
@@ -22,7 +26,7 @@ spl_autoload_register(function ($class) {
     $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
     
     if (file_exists($file)) {
-        require $file;
+        require_once $file;
     }
 });
 
