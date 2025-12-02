@@ -43,9 +43,12 @@ class Club
      */
     public function update($id, $data)
     {
-        if (empty($updateData)) {
-            return 0;
-        }
+        $updateData = [
+            'club_name' => $data['club_name'],
+            'description' => $data['description'] ?? null,
+            'teacher_id' => $data['teacher_id'],
+            'academic_year' => $data['academic_year']
+        ];
         
         return $this->db->update('clubs', $updateData, 'id = :id', [':id' => $id]);
     }
