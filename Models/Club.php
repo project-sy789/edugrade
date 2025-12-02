@@ -30,7 +30,9 @@ class Club
             'club_name' => $data['club_name'],
             'description' => $data['description'] ?? null,
             'teacher_id' => $data['teacher_id'],
-            'academic_year' => $data['academic_year']
+            'academic_year' => $data['academic_year'],
+            'class_levels' => json_encode($data['class_levels'] ?? []),
+            'max_students' => $data['max_students'] ?? 30
         ]);
     }
     
