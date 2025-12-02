@@ -221,7 +221,7 @@ class Course
     public function getEnrolledStudents($courseId)
     {
         return $this->db->fetchAll(
-            'SELECT s.*, ce.enrolled_at 
+            'SELECT s.*, ce.id as enrollment_id, ce.enrolled_at 
              FROM students s
              INNER JOIN course_enrollments ce ON s.id = ce.student_id
              WHERE ce.course_id = :course_id
