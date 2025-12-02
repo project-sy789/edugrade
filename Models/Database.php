@@ -96,8 +96,9 @@ class Database
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            error_log('Query failed: ' . $e->getMessage() . ' | SQL: ' . $sql);
-            throw new \Exception('การดำเนินการฐานข้อมูลล้มเหลว');
+            error_log('Query failed: ' . $e->getMessage() . ' | SQL: ' . $sql . ' | Params: ' . json_encode($params));
+            // Show actual error in development
+            throw new \Exception('Database Error: ' . $e->getMessage());
         }
     }
     
