@@ -1,0 +1,21 @@
+# DirectoryIndex
+DirectoryIndex index.php
+
+# URL Rewriting
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Don't rewrite files or directories that exist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Rewrite everything else to index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Security
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
