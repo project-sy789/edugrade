@@ -56,13 +56,46 @@
                 <h2>จัดการนักเรียน</h2>
             </div>
             
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <form method="GET" action="/teacher/students" style="flex: 1; max-width: 400px;">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" name="search" class="form-control" placeholder="ค้นหา (รหัส, ชื่อ, เลขบัตร)" value="<?php echo htmlspecialchars($search ?? ''); ?>">
-                        <button type="submit" class="btn btn-primary">ค้นหา</button>
-                    </div>
-                </form>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+                <div style="display: flex; gap: 1rem; flex: 1; flex-wrap: wrap;">
+                    <form method="GET" action="/teacher/students" style="flex: 1; min-width: 250px;">
+                        <input type="text" 
+                               name="search" 
+                               placeholder="ค้นหา (รหัส, ชื่อ, เลขบัตรประชาชน)" 
+                               value="<?php echo htmlspecialchars($search ?? ''); ?>" 
+                               class="form-control"
+                               style="width: 100%;">
+                    </form>
+                    
+                    <form method="GET" action="/teacher/students" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <?php if (!empty($search)): ?>
+                            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                        <?php endif; ?>
+                        
+                        <select name="class_level" class="form-control" onchange="this.form.submit()" style="min-width: 120px;">
+                            <option value="">ทุกระดับชั้น</option>
+                            <option value="ม.1" <?php echo ($classLevel ?? '') === 'ม.1' ? 'selected' : ''; ?>>ม.1</option>
+                            <option value="ม.2" <?php echo ($classLevel ?? '') === 'ม.2' ? 'selected' : ''; ?>>ม.2</option>
+                            <option value="ม.3" <?php echo ($classLevel ?? '') === 'ม.3' ? 'selected' : ''; ?>>ม.3</option>
+                            <option value="ม.4" <?php echo ($classLevel ?? '') === 'ม.4' ? 'selected' : ''; ?>>ม.4</option>
+                            <option value="ม.5" <?php echo ($classLevel ?? '') === 'ม.5' ? 'selected' : ''; ?>>ม.5</option>
+                            <option value="ม.6" <?php echo ($classLevel ?? '') === 'ม.6' ? 'selected' : ''; ?>>ม.6</option>
+                        </select>
+                        
+                        <select name="classroom" class="form-control" onchange="this.form.submit()" style="min-width: 100px;">
+                            <option value="">ทุกห้อง</option>
+                            <?php for ($i = 1; $i <= 15; $i++): ?>
+                                <option value="<?php echo $i; ?>" <?php echo ($classroom ?? '') == $i ? 'selected' : ''; ?>><?php echo $i; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                        
+                        <?php if (!empty($classLevel) || !empty($classroom)): ?>
+                            <a href="/teacher/students<?php echo !empty($search) ? '?search=' . urlencode($search) : ''; ?>" 
+                               class="btn btn-secondary" 
+                               style="white-space: nowrap;">ล้างตัวกรอง</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
                 
                 <div style="display: flex; gap: 0.5rem;">
                     <a href="/teacher/students/upload" class="btn btn-secondary">นำเข้า XLSX</a>

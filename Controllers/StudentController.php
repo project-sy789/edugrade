@@ -27,13 +27,27 @@ class StudentController extends BaseController
         $this->requireTeacher();
         
         $search = $this->get('search', '');
+        $classLevel = $this->get('class_level', '');
+        $classroom = $this->get('classroom', '');
         $page = max(1, (int)$this->get('page', 1));
         $perPage = 20;
         $offset = ($page - 1) * $perPage;
         
+        // Build filters
+        $filters = [];
         if (!empty($search)) {
-            $students = $this->studentModel->search($search, $perPage, $offset);
-            $totalStudents = $this->studentModel->countSearch($search);
+            $filters['search'] = $search;
+        }
+        if (!empty($classLevel)) {
+            $filters['class_level'] = $classLevel;
+        }
+        if (!empty($classroom)) {
+            $filters['classroom'] = $classroom;
+        }
+        
+        if (!empty($filters)) {
+            $students = $this->studentModel->filter($filters, $perPage, $offset);
+            $totalStudents = $this->studentModel->countFilter($filters);
         } else {
             $students = $this->studentModel->getAll($perPage, $offset);
             $totalStudents = $this->studentModel->count();
@@ -44,6 +58,8 @@ class StudentController extends BaseController
         $this->render('teacher/students/index', [
             'students' => $students,
             'search' => $search,
+            'classLevel' => $classLevel,
+            'classroom' => $classroom,
             'currentPage' => $page,
             'totalPages' => $totalPages,
             'totalStudents' => $totalStudents

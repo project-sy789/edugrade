@@ -174,6 +174,85 @@ class Student
     }
     
     /**
+     * Filter students by multiple criteria
+     * 
+     * @param array $filters Filter criteria (search, class_level, classroom)
+     * @param int $limit Limit number of results (0 = no limit)
+     * @param int $offset Offset for pagination
+     * @return array Array of students
+     */
+    public function filter($filters, $limit = 0, $offset = 0)
+    {
+        $sql = 'SELECT * FROM students WHERE 1=1';
+        $params = [];
+        
+        if (!empty($filters['search'])) {
+            $searchTerm = '%' . $filters['search'] . '%';
+            $sql .= ' AND (student_code LIKE :search OR id_card LIKE :search OR name LIKE :search)';
+            $params[':search'] = $searchTerm;
+        }
+        
+        if (!empty($filters['class_level'])) {
+            $sql .= ' AND class_level = :class_level';
+            $params[':class_level'] = $filters['class_level'];
+        }
+        
+        if (!empty($filters['classroom'])) {
+            $sql .= ' AND classroom = :classroom';
+            $params[':classroom'] = $filters['classroom'];
+        }
+        
+        $sql .= ' ORDER BY class_level, classroom, student_code';
+        
+        if ($limit > 0) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $stmt = $this->db->getConnection()->prepare($sql);
+            
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            
+            $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        }
+        
+        return $this->db->fetchAll($sql, $params);
+    }
+    
+    /**
+     * Count students matching filter criteria
+     * 
+     * @param array $filters Filter criteria (search, class_level, classroom)
+     * @return int Count of matching students
+     */
+    public function countFilter($filters)
+    {
+        $sql = 'SELECT COUNT(*) as count FROM students WHERE 1=1';
+        $params = [];
+        
+        if (!empty($filters['search'])) {
+            $searchTerm = '%' . $filters['search'] . '%';
+            $sql .= ' AND (student_code LIKE :search OR id_card LIKE :search OR name LIKE :search)';
+            $params[':search'] = $searchTerm;
+        }
+        
+        if (!empty($filters['class_level'])) {
+            $sql .= ' AND class_level = :class_level';
+            $params[':class_level'] = $filters['class_level'];
+        }
+        
+        if (!empty($filters['classroom'])) {
+            $sql .= ' AND classroom = :classroom';
+            $params[':classroom'] = $filters['classroom'];
+        }
+        
+        $result = $this->db->fetchOne($sql, $params);
+        return (int) $result['count'];
+    }
+    
+    /**
      * Get all students
      * 
      * @param int $limit Limit number of results (0 = no limit)
