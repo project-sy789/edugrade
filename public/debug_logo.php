@@ -1,31 +1,47 @@
 <?php
 // Debug script to check logo setting
-require_once __DIR__ . '/config/config.php';
-require_once __DIR__ . '/config/helpers.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-echo "<h2>Debug Logo Settings</h2>";
+// Load database config
+$config = require __DIR__ . '/../config/database.php';
 
-// Check what's in database
-$db = App\Models\Database::getInstance();
-$settings = $db->fetchAll("SELECT * FROM settings WHERE setting_key LIKE '%logo%'");
-
-echo "<h3>Settings in Database:</h3>";
-echo "<pre>";
-print_r($settings);
-echo "</pre>";
-
-echo "<h3>Logo Path Function Result:</h3>";
-echo "logoPath() = " . logoPath();
-
-echo "<h3>Direct Setting Calls:</h3>";
-echo "setting('logo_path') = " . setting('logo_path') . "<br>";
-echo "setting('site_logo') = " . setting('site_logo') . "<br>";
-
-echo "<h3>File Check:</h3>";
-$logoPath = setting('logo_path');
-if ($logoPath) {
-    $fullPath = __DIR__ . '/public' . $logoPath;
-    echo "Full path: $fullPath<br>";
-    echo "File exists: " . (file_exists($fullPath) ? 'YES' : 'NO') . "<br>";
+// Connect to database
+try {
+    $dsn = sprintf(
+        'mysql:host=%s;dbname=%s;charset=%s',
+        $config['host'],
+        $config['database'],
+        $config['charset']
+    );
+    
+    $pdo = new PDO($dsn, $config['username'], $config['password']);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    echo "<h2>Debug Logo Settings</h2>";
+    
+    // Check what's in database
+    $stmt = $pdo->query("SELECT * FROM settings WHERE setting_key LIKE '%logo%'");
+    $settings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo "<h3>Settings in Database:</h3>";
+    echo "<pre>";
+    print_r($settings);
+    echo "</pre>";
+    
+    // Check uploads folder
+    echo "<h3>Files in uploads/logos:</h3>";
+    $uploadDir = __DIR__ . '/uploads/logos';
+    if (is_dir($uploadDir)) {
+        $files = scandir($uploadDir);
+        echo "<pre>";
+        print_r($files);
+        echo "</pre>";
+    } else {
+        echo "Directory does not exist: $uploadDir";
+    }
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
 }
 ?>
