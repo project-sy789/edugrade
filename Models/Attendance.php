@@ -149,20 +149,33 @@ class Attendance
      * 
      * @param int $courseId Course ID
      * @param string|null $date Specific date (optional)
-     * @param int $period Period number (default 1)
+     * @param int|null $period Period number (default 1, null for all periods)
      * @return array Array of attendance records
      */
     public function getCourseAttendance($courseId, $date = null, $period = 1)
     {
         if ($date !== null) {
-            return $this->db->fetchAll(
-                'SELECT a.*, s.student_code, s.name, s.class_level, s.classroom
-                 FROM attendance a
-                 INNER JOIN students s ON a.student_id = s.id
-                 WHERE a.course_id = :course_id AND a.date = :date AND a.period = :period
-                 ORDER BY s.class_level, s.classroom, s.student_code',
-                [':course_id' => $courseId, ':date' => $date, ':period' => $period]
-            );
+            if ($period === null) {
+                // Get all periods for this date
+                return $this->db->fetchAll(
+                    'SELECT a.*, s.student_code, s.name, s.class_level, s.classroom
+                     FROM attendance a
+                     INNER JOIN students s ON a.student_id = s.id
+                     WHERE a.course_id = :course_id AND a.date = :date
+                     ORDER BY a.period, s.class_level, s.classroom, s.student_code',
+                    [':course_id' => $courseId, ':date' => $date]
+                );
+            } else {
+                // Get specific period
+                return $this->db->fetchAll(
+                    'SELECT a.*, s.student_code, s.name, s.class_level, s.classroom
+                     FROM attendance a
+                     INNER JOIN students s ON a.student_id = s.id
+                     WHERE a.course_id = :course_id AND a.date = :date AND a.period = :period
+                     ORDER BY s.class_level, s.classroom, s.student_code',
+                    [':course_id' => $courseId, ':date' => $date, ':period' => $period]
+                );
+            }
         }
         
         return $this->db->fetchAll(

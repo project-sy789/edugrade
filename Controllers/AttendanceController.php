@@ -38,12 +38,26 @@ class AttendanceController extends BaseController
         $date = $this->get('date', date('Y-m-d'));
         $period = (int)$this->get('period', 1);
         $students = $this->courseModel->getEnrolledStudents($courseId);
+        
+        // Get attendance for current period
         $attendance = $this->attendanceModel->getCourseAttendance($courseId, $date, $period);
         
-        // Create attendance map for easy lookup
+        // Get attendance for ALL periods of this date (for display)
+        $allPeriodsAttendance = $this->attendanceModel->getCourseAttendance($courseId, $date, null);
+        
+        // Create attendance map for current period
         $attendanceMap = [];
         foreach ($attendance as $record) {
             $attendanceMap[$record['student_id']] = $record;
+        }
+        
+        // Create map of all periods attendance by student
+        $allPeriodsMap = [];
+        foreach ($allPeriodsAttendance as $record) {
+            if (!isset($allPeriodsMap[$record['student_id']])) {
+                $allPeriodsMap[$record['student_id']] = [];
+            }
+            $allPeriodsMap[$record['student_id']][$record['period']] = $record;
         }
         
         $this->render('teacher/attendance/record', [
@@ -52,6 +66,7 @@ class AttendanceController extends BaseController
             'period' => $period,
             'students' => $students,
             'attendanceMap' => $attendanceMap,
+            'allPeriodsMap' => $allPeriodsMap,
             'db' => $this->attendanceModel->getDb()
         ]);
     }

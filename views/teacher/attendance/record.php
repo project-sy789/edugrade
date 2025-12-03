@@ -271,6 +271,28 @@
                                         <option value="leave" <?php echo $status === 'leave' ? 'selected' : ''; ?>>ลา</option>
                                         <option value="late" <?php echo $status === 'late' ? 'selected' : ''; ?>>สาย</option>
                                     </select>
+                                    <?php 
+                                    // Show other periods' status
+                                    $otherPeriods = $allPeriodsMap[$student['id']] ?? [];
+                                    if (!empty($otherPeriods) && count($otherPeriods) > 1):
+                                        $statusLabels = [
+                                            'present' => 'มา',
+                                            'absent' => 'ขาด',
+                                            'sick' => 'ป่วย',
+                                            'leave' => 'ลา',
+                                            'late' => 'สาย'
+                                        ];
+                                        echo '<div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">';
+                                        $periodStatuses = [];
+                                        foreach ($otherPeriods as $p => $rec) {
+                                            if ($p != $period) {
+                                                $periodStatuses[] = "คาบ $p: " . ($statusLabels[$rec['status']] ?? $rec['status']);
+                                            }
+                                        }
+                                        echo implode(', ', $periodStatuses);
+                                        echo '</div>';
+                                    endif;
+                                    ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
