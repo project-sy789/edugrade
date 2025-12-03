@@ -129,19 +129,20 @@ class Attendance
      */
     public function getStudentAttendanceInRange($studentId, $courseId, $startDate, $endDate)
     {
-        return $this->db->fetchAll(
-            'SELECT * FROM attendance 
-             WHERE student_id = :student_id 
-               AND course_id = :course_id 
-               AND date BETWEEN :start_date AND :end_date
-             ORDER BY date DESC',
-            [
-                ':student_id' => $studentId,
-                ':course_id' => $courseId,
-                ':start_date' => $startDate,
-                ':end_date' => $endDate
-            ]
-        );
+        // Use direct PDO to avoid parameter binding issues
+        $studentId = (int)$studentId;
+        $courseId = (int)$courseId;
+        $startDate = $this->db->getConnection()->quote($startDate);
+        $endDate = $this->db->getConnection()->quote($endDate);
+        
+        $sql = "SELECT * FROM attendance 
+                WHERE student_id = $studentId 
+                  AND course_id = $courseId 
+                  AND date BETWEEN $startDate AND $endDate
+                ORDER BY date DESC, period";
+        
+        $stmt = $this->db->getConnection()->query($sql);
+        return $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
     }
     
     /**

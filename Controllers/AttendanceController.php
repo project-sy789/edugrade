@@ -186,6 +186,12 @@ class AttendanceController extends BaseController
                 'total' => count($records)
             ];
             
+            // Debug: log records for first student
+            if ($student['id'] == 4) {
+                error_log("Student 4 records count: " . count($records));
+                error_log("Student 4 records: " . json_encode($records));
+            }
+            
             foreach ($records as $record) {
                 $stats[$record['status']]++;
             }
