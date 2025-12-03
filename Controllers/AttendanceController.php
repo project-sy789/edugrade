@@ -88,6 +88,38 @@ class AttendanceController extends BaseController
     }
     
     /**
+     * Save attendance via AJAX (for individual student updates)
+     */
+    public function saveAjax()
+    {
+        $this->requireTeacher();
+        
+        try {
+            $studentId = $this->post('student_id');
+            $courseId = $this->post('course_id');
+            $date = $this->post('date');
+            $period = (int)$this->post('period', 1);
+            $status = $this->post('status');
+            
+            if (empty($studentId) || empty($courseId) || empty($date) || empty($status)) {
+                throw new \Exception('ข้อมูลไม่ครบถ้วน');
+            }
+            
+            $this->attendanceModel->record($studentId, $courseId, $date, $status, $period);
+            
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'บันทึกการเข้าเรียนสำเร็จ'
+            ]);
+        } catch (\Exception $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+    
+    /**
      * Show attendance summary for a course (teacher view)
      */
     public function summary($courseId)

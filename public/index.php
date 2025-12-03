@@ -344,7 +344,7 @@ try {
         
         if ($action === 'save-attendance' && $requestMethod === 'POST') {
             $attendanceController = new AttendanceController();
-            $attendanceController->save();
+            $attendanceController->saveAjax();
             exit;
         }
     }
