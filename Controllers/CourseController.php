@@ -295,29 +295,22 @@ class CourseController extends BaseController
         
         try {
             $enrollmentIdRaw = $this->post('enrollment_id');
-            error_log("Raw enrollment_id: " . var_export($enrollmentIdRaw, true));
-            
             $enrollmentId = (int)$enrollmentIdRaw;
-            error_log("Converted enrollment_id: " . $enrollmentId);
             
             if ($enrollmentId <= 0) {
-                throw new \Exception('ไม่พบข้อมูลการลงทะเบียน (ID: ' . $enrollmentIdRaw . ')');
+                throw new \Exception('ไม่พบข้อมูลการลงทะเบียน');
             }
             
-            // Delete enrollment using Database instance
+            // Delete enrollment using exec to avoid parameter binding issues
             $db = \App\Models\Database::getInstance();
             $conn = $db->getConnection();
             
-            // Use PDO::PARAM_INT explicitly
-            $stmt = $conn->prepare('DELETE FROM course_enrollments WHERE id = ?');
-            $stmt->bindValue(1, $enrollmentId, \PDO::PARAM_INT);
-            $stmt->execute();
-            
-            $rowCount = $stmt->rowCount();
-            error_log("Rows deleted: " . $rowCount);
+            // Use exec with integer (safe from SQL injection since we cast to int)
+            $sql = "DELETE FROM course_enrollments WHERE id = " . $enrollmentId;
+            $rowCount = $conn->exec($sql);
             
             if ($rowCount === 0) {
-                throw new \Exception('ไม่พบข้อมูลการลงทะเบียนที่ต้องการลบ (ID: ' . $enrollmentId . ')');
+                throw new \Exception('ไม่พบข้อมูลการลงทะเบียนที่ต้องการลบ');
             }
             
             $this->jsonResponse(['success' => true, 'message' => 'ลบนักเรียนออกจากรายวิชาสำเร็จ']);
