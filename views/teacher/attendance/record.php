@@ -338,7 +338,8 @@
             
             console.log('=== saveAllAttendance called ===');
             
-            const selects = document.querySelectorAll('select.form-control');
+            // Only select attendance dropdowns (those with data-student-id)
+            const selects = document.querySelectorAll('select.form-control[data-student-id]');
             const courseId = <?php echo $course['id']; ?>;
             const date = '<?php echo $date; ?>';
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -369,6 +370,11 @@
             selects.forEach((select, index) => {
                 const studentId = select.getAttribute('data-student-id');
                 const status = select.value;
+                
+                // Skip if no status selected
+                if (!status) {
+                    return;
+                }
                 
                 console.log(`[${index + 1}/${selects.length}] Saving student ${studentId}: ${status}`);
                 
