@@ -36,8 +36,9 @@ class AttendanceController extends BaseController
         }
         
         $date = $this->get('date', date('Y-m-d'));
+        $period = (int)$this->get('period', 1);
         $students = $this->courseModel->getEnrolledStudents($courseId);
-        $attendance = $this->attendanceModel->getCourseAttendance($courseId, $date);
+        $attendance = $this->attendanceModel->getCourseAttendance($courseId, $date, $period);
         
         // Create attendance map for easy lookup
         $attendanceMap = [];
@@ -48,6 +49,7 @@ class AttendanceController extends BaseController
         $this->render('teacher/attendance/record', [
             'course' => $course,
             'date' => $date,
+            'period' => $period,
             'students' => $students,
             'attendanceMap' => $attendanceMap,
             'db' => $this->attendanceModel->getDb()
@@ -57,35 +59,32 @@ class AttendanceController extends BaseController
     /**
      * Save attendance
      */
-    public function save()
+    public function save($courseId)
     {
         $this->requireTeacher();
-        
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->jsonResponse(['success' => false, 'message' => 'Invalid request'], 400);
-            return;
-        }
-        
         $this->requireCsrfToken();
         
         try {
-            $studentId = $this->post('student_id');
-            $courseId = $this->post('course_id');
             $date = $this->post('date');
-            $status = $this->post('status');
+            $period = (int)$this->post('period', 1);
+            $attendance = $this->post('attendance', []);
             
-            $this->attendanceModel->record($studentId, $courseId, $date, $status);
+            if (empty($date)) {
+                throw new \Exception('กรุณาระบุวันที่');
+            }
             
-            $this->jsonResponse([
-                'success' => true,
-                'message' => 'บันทึกการเข้าเรียนสำเร็จ'
-            ]);
+            foreach ($attendance as $studentId => $status) {
+                if (!empty($status)) {
+                    $this->attendanceModel->record($studentId, $courseId, $date, $status, $period);
+                }
+            }
+            
+            $this->setFlash('success', 'บันทึกการเข้าเรียนสำเร็จ (คาบที่ ' . $period . ')');
         } catch (\Exception $e) {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
+            $this->setFlash('error', $e->getMessage());
         }
+        
+        $this->redirect('/teacher/courses/' . $courseId . '/attendance?date=' . ($date ?? date('Y-m-d')) . '&period=' . $period);
     }
     
     /**

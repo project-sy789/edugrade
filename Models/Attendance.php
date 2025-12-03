@@ -40,23 +40,26 @@ class Attendance
      * @param int $courseId Course ID
      * @param string $date Date (YYYY-MM-DD)
      * @param string $status Attendance status
+     * @param int $period Period number (1-8, default 1)
      * @return int Attendance ID
      * @throws \Exception if validation fails
      */
-    public function record($studentId, $courseId, $date, $status)
+    public function record($studentId, $courseId, $date, $status, $period = 1)
     {
         $this->validateStatus($status);
         
-        // Check if attendance already exists for this date
+        // Check if attendance already exists for this date and period
         $existing = $this->db->fetchOne(
             'SELECT id FROM attendance 
              WHERE student_id = :student_id 
                AND course_id = :course_id 
-               AND date = :date',
+               AND date = :date
+               AND period = :period',
             [
                 ':student_id' => $studentId,
                 ':course_id' => $courseId,
-                ':date' => $date
+                ':date' => $date,
+                ':period' => $period
             ]
         );
         
@@ -75,6 +78,7 @@ class Attendance
                 'student_id' => $studentId,
                 'course_id' => $courseId,
                 'date' => $date,
+                'period' => $period,
                 'status' => $status
             ]);
         }
@@ -147,18 +151,19 @@ class Attendance
      * 
      * @param int $courseId Course ID
      * @param string|null $date Specific date (optional)
+     * @param int $period Period number (default 1)
      * @return array Array of attendance records
      */
-    public function getCourseAttendance($courseId, $date = null)
+    public function getCourseAttendance($courseId, $date = null, $period = 1)
     {
         if ($date !== null) {
             return $this->db->fetchAll(
                 'SELECT a.*, s.student_code, s.name, s.class_level, s.classroom
                  FROM attendance a
                  INNER JOIN students s ON a.student_id = s.id
-                 WHERE a.course_id = :course_id AND a.date = :date
+                 WHERE a.course_id = :course_id AND a.date = :date AND a.period = :period
                  ORDER BY s.class_level, s.classroom, s.student_code',
-                [':course_id' => $courseId, ':date' => $date]
+                [':course_id' => $courseId, ':date' => $date, ':period' => $period]
             );
         }
         
@@ -167,7 +172,7 @@ class Attendance
              FROM attendance a
              INNER JOIN students s ON a.student_id = s.id
              WHERE a.course_id = :course_id
-             ORDER BY a.date DESC, s.class_level, s.classroom, s.student_code',
+             ORDER BY a.date DESC, a.period, s.class_level, s.classroom, s.student_code',
             [':course_id' => $courseId]
         );
     }

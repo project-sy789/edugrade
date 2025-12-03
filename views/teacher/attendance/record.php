@@ -81,6 +81,21 @@
                         </div>
                     </div>
                     
+                    <!-- Period Selector -->
+                    <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+                        <label style="font-weight: 600; min-width: 80px;">คาบเรียนที่:</label>
+                        <select id="periodSelector" class="form-control" style="max-width: 200px;" onchange="changePeriod(this.value)">
+                            <?php for ($p = 1; $p <= 8; $p++): ?>
+                                <option value="<?php echo $p; ?>" <?php echo ($period == $p) ? 'selected' : ''; ?>>
+                                    คาบที่ <?php echo $p; ?>
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+                        <span style="color: var(--text-light); font-size: 0.875rem;">
+                            (เลือกคาบเรียนที่ต้องการบันทึก)
+                        </span>
+                    </div>
+                    
                     <!-- Calendar Grid -->
                     <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: #f5f5f5; padding: 8px; border-radius: 8px;">
                         <!-- Day headers -->
@@ -153,14 +168,21 @@
             
             <script>
                 function selectDate(date) {
-                    window.location.href = '/teacher/courses/<?php echo $course['id']; ?>/attendance?date=' + date;
+                    const period = document.getElementById('periodSelector').value;
+                    window.location.href = '/teacher/courses/<?php echo $course['id']; ?>/attendance?date=' + date + '&period=' + period;
                 }
                 
                 function changeMonth(offset) {
                     const currentDate = new Date('<?php echo $date; ?>');
                     currentDate.setMonth(currentDate.getMonth() + offset);
                     const newDate = currentDate.toISOString().split('T')[0];
-                    window.location.href = '/teacher/courses/<?php echo $course['id']; ?>/attendance?date=' + newDate;
+                    const period = document.getElementById('periodSelector').value;
+                    window.location.href = '/teacher/courses/<?php echo $course['id']; ?>/attendance?date=' + newDate + '&period=' + period;
+                }
+                
+                function changePeriod(period) {
+                    const date = '<?php echo $date; ?>';
+                    window.location.href = '/teacher/courses/<?php echo $course['id']; ?>/attendance?date=' + date + '&period=' + period;
                 }
             </script>
             
@@ -280,6 +302,7 @@
             formData.append('student_id', studentId);
             formData.append('course_id', courseId);
             formData.append('date', date);
+            formData.append('period', document.getElementById('periodSelector').value);
             formData.append('status', status);
             formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
             
