@@ -48,39 +48,37 @@ class Attendance
     {
         $this->validateStatus($status);
         
+        // Cast to safe types
+        $studentId = (int)$studentId;
+        $courseId = (int)$courseId;
+        $period = (int)$period;
+        $date = $this->db->getConnection()->quote($date);
+        $status = $this->db->getConnection()->quote($status);
+        
         // Check if attendance already exists for this date and period
-        $existing = $this->db->fetchOne(
-            'SELECT id FROM attendance 
-             WHERE student_id = :student_id 
-               AND course_id = :course_id 
-               AND date = :date
-               AND period = :period',
-            [
-                ':student_id' => $studentId,
-                ':course_id' => $courseId,
-                ':date' => $date,
-                ':period' => $period
-            ]
-        );
+        $checkSql = "SELECT id FROM attendance 
+                     WHERE student_id = $studentId 
+                       AND course_id = $courseId 
+                       AND date = $date
+                       AND period = $period";
+        
+        $stmt = $this->db->getConnection()->query($checkSql);
+        $existing = $stmt ? $stmt->fetch(\PDO::FETCH_ASSOC) : null;
         
         if ($existing) {
             // Update existing attendance
-            $this->db->update(
-                'attendance',
-                ['status' => $status],
-                'id = :id',
-                [':id' => $existing['id']]
-            );
+            $updateSql = "UPDATE attendance 
+                         SET status = $status 
+                         WHERE id = " . (int)$existing['id'];
+            $this->db->getConnection()->exec($updateSql);
             return $existing['id'];
         } else {
             // Insert new attendance
-            return $this->db->insert('attendance', [
-                'student_id' => $studentId,
-                'course_id' => $courseId,
-                'date' => $date,
-                'period' => $period,
-                'status' => $status
-            ]);
+            $insertSql = "INSERT INTO attendance 
+                         (student_id, course_id, date, period, status) 
+                         VALUES ($studentId, $courseId, $date, $period, $status)";
+            $this->db->getConnection()->exec($insertSql);
+            return $this->db->getConnection()->lastInsertId();
         }
     }
     
