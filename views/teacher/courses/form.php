@@ -90,6 +90,11 @@
                             require_once __DIR__ . '/../../Models/User.php';
                             $userModel = new \App\Models\User();
                             $teachers = $userModel->getAll();
+                            
+                            // Debug: Show teacher count
+                            echo '<!-- DEBUG: Found ' . count($teachers) . ' teachers -->';
+                            echo '<!-- DEBUG: Course teacher_id = ' . ($course['teacher_id'] ?? 'NOT SET') . ' -->';
+                            
                             foreach ($teachers as $teacher):
                             ?>
                                 <option value="<?php echo $teacher['id']; ?>" 
@@ -98,9 +103,7 @@
                                     $isSelected = isset($course['teacher_id']) && (int)$course['teacher_id'] === (int)$teacher['id'];
                                     echo $isSelected ? 'selected' : ''; 
                                     // Debug output
-                                    if ($isSelected) {
-                                        echo ' data-debug="MATCHED: course=' . $course['teacher_id'] . ' teacher=' . $teacher['id'] . '"';
-                                    }
+                                    echo '<!-- Teacher ID: ' . $teacher['id'] . ' | Match: ' . ($isSelected ? 'YES' : 'NO') . ' -->';
                                     ?>>
                                     <?php echo htmlspecialchars($teacher['name']); ?> 
                                     (<?php echo $teacher['role'] === 'admin' ? 'Admin' : 'ครู'; ?>)

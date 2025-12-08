@@ -89,7 +89,7 @@ class CourseController extends BaseController
                 'course_name' => $this->post('course_name'),
                 'academic_year' => $this->post('academic_year'),
                 'semester' => $this->post('semester'),
-                'teacher_id' => $this->post('teacher_id') ?: null
+                'teacher_id' => $this->post('teacher_id') ?: ($_SESSION['user_id'] ?? null)
             ];
             
             $this->courseModel->create($data);
