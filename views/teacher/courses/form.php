@@ -97,6 +97,10 @@
                                     // Ensure both values are integers for comparison
                                     $isSelected = isset($course['teacher_id']) && (int)$course['teacher_id'] === (int)$teacher['id'];
                                     echo $isSelected ? 'selected' : ''; 
+                                    // Debug output
+                                    if ($isSelected) {
+                                        echo ' data-debug="MATCHED: course=' . $course['teacher_id'] . ' teacher=' . $teacher['id'] . '"';
+                                    }
                                     ?>>
                                     <?php echo htmlspecialchars($teacher['name']); ?> 
                                     (<?php echo $teacher['role'] === 'admin' ? 'Admin' : 'ครู'; ?>)
