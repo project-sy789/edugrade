@@ -184,6 +184,37 @@
                     const date = '<?php echo $date; ?>';
                     window.location.href = '/teacher/courses/<?php echo $course['id']; ?>/attendance?date=' + date + '&period=' + period;
                 }
+                
+                function filterByClassroom() {
+                    const filter = document.getElementById('classroomFilter').value;
+                    const rows = document.querySelectorAll('.student-row');
+                    let visibleCount = 0;
+                    
+                    rows.forEach((row, index) => {
+                        const classroom = row.getAttribute('data-classroom');
+                        if (filter === '' || classroom === filter) {
+                            row.style.display = '';
+                            visibleCount++;
+                            // Update row number
+                            row.querySelector('td:first-child').textContent = visibleCount;
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                    
+                    // Update count display
+                    const countSpan = document.getElementById('studentCount');
+                    if (filter === '') {
+                        countSpan.textContent = `(${visibleCount} คน)`;
+                    } else {
+                        countSpan.textContent = `(${visibleCount} คน)`;
+                    }
+                }
+                
+                // Initialize count on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    filterByClassroom();
+                });
             </script>
             
             <?php if (empty($students)): ?>
@@ -238,7 +269,32 @@
                     </div>
                 </div>
                 
-                <h3 style="margin-bottom: 1rem;">รายชื่อนักเรียน</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">รายชื่อนักเรียน</h3>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <label for="classroomFilter" style="margin: 0; font-weight: normal;">กรองตามห้อง:</label>
+                        <select id="classroomFilter" class="form-control" style="width: auto; min-width: 150px;" onchange="filterByClassroom()">
+                            <option value="">แสดงทั้งหมด</option>
+                            <?php
+                            // Get unique classrooms
+                            $classrooms = [];
+                            foreach ($students as $s) {
+                                $key = $s['class_level'] . '/' . $s['classroom'];
+                                if (!in_array($key, $classrooms)) {
+                                    $classrooms[] = $key;
+                                }
+                            }
+                            sort($classrooms);
+                            foreach ($classrooms as $classroom):
+                            ?>
+                                <option value="<?php echo htmlspecialchars($classroom); ?>">
+                                    <?php echo htmlspecialchars($classroom); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span id="studentCount" style="color: #666; font-size: 0.9rem;"></span>
+                    </div>
+                </div>
                 
                 <table class="table">
                     <thead>
@@ -255,8 +311,9 @@
                         foreach ($students as $student): 
                             $attendance = $attendanceMap[$student['id']] ?? null;
                             $status = $attendance['status'] ?? 'present';
+                            $classroomKey = $student['class_level'] . '/' . $student['classroom'];
                         ?>
-                            <tr>
+                            <tr class="student-row" data-classroom="<?php echo htmlspecialchars($classroomKey); ?>">
                                 <td style="text-align: center;"><?php echo $no++; ?></td>
                                 <td><?php echo htmlspecialchars($student['student_code']); ?></td>
                                 <td><?php echo htmlspecialchars($student['name']); ?></td>
