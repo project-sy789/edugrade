@@ -188,8 +188,10 @@ class Student
         
         if (!empty($filters['search'])) {
             $searchTerm = '%' . $filters['search'] . '%';
-            $sql .= ' AND (student_code LIKE :search OR id_card LIKE :search OR name LIKE :search)';
-            $params[':search'] = $searchTerm;
+            $sql .= ' AND (student_code LIKE :search1 OR id_card LIKE :search2 OR name LIKE :search3)';
+            $params[':search1'] = $searchTerm;
+            $params[':search2'] = $searchTerm;
+            $params[':search3'] = $searchTerm;
         }
         
         if (!empty($filters['class_level'])) {
@@ -234,8 +236,10 @@ class Student
         
         if (!empty($filters['search'])) {
             $searchTerm = '%' . $filters['search'] . '%';
-            $sql .= ' AND (student_code LIKE :search OR id_card LIKE :search OR name LIKE :search)';
-            $params[':search'] = $searchTerm;
+            $sql .= ' AND (student_code LIKE :search1 OR id_card LIKE :search2 OR name LIKE :search3)';
+            $params[':search1'] = $searchTerm;
+            $params[':search2'] = $searchTerm;
+            $params[':search3'] = $searchTerm;
         }
         
         if (!empty($filters['class_level'])) {
