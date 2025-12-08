@@ -77,14 +77,7 @@
                     <!-- Show teacher selector when EDITING (admin can change, others can see) -->
                     <div class="form-group">
                         <label class="form-label" for="teacher_id">ครูผู้สอน</label>
-                        <!-- Debug: Show current teacher_id -->
-                        <?php if (isset($course['teacher_id'])): ?>
-                            <small style="color: #999; display: block; margin-bottom: 0.5rem;">
-                                Debug: teacher_id = <?php echo var_export($course['teacher_id'], true); ?>
-                            </small>
-                        <?php endif; ?>
-                        <select class="form-control" id="teacher_id" name="teacher_id" 
-                            <?php echo (isset($_SESSION['role']) && $_SESSION['role'] !== 'admin') ? 'disabled' : ''; ?>>
+                        <select class="form-control" id="teacher_id" name="teacher_id">
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
                             // Get all teachers using Database singleton (already loaded)

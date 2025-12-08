@@ -142,6 +142,10 @@ class CourseController extends BaseController
                 'teacher_id' => $this->post('teacher_id') ?: null
             ];
             
+            // Debug: Log teacher_id value
+            error_log('DEBUG CourseController::update - teacher_id POST value: ' . var_export($this->post('teacher_id'), true));
+            error_log('DEBUG CourseController::update - teacher_id final value: ' . var_export($data['teacher_id'], true));
+            
             $this->courseModel->update($id, $data);
             $this->setFlash('success', 'แก้ไขรายวิชาสำเร็จ');
             $this->redirect('/teacher/courses');
