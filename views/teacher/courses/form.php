@@ -88,7 +88,7 @@
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
                             // Get all teachers
-                            require_once __DIR__ . '/../../Models/User.php';
+                            require_once __DIR__ . '/../../models/User.php';
                             $userModel = new \App\Models\User();
                             $teachers = $userModel->getAll();
                             
