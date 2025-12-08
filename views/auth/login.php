@@ -18,7 +18,10 @@
                     <img src="<?php echo logoPath(); ?>" alt="Logo" style="max-height: 80px; margin-bottom: 1rem;">
                 <?php endif; ?>
                 <?php 
-                $schoolName = getSetting('school_name');
+                // Get school name from settings
+                require_once __DIR__ . '/../../Models/Settings.php';
+                $settingsModel = new \App\Models\Settings();
+                $schoolName = $settingsModel->get('school_name');
                 if ($schoolName): 
                 ?>
                     <h2 style="margin: 0 0 0.5rem 0; color: var(--primary-color); font-size: 1.5rem;">
