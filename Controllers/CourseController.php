@@ -35,8 +35,21 @@ class CourseController extends BaseController
         $perPage = 20;
         $offset = ($page - 1) * $perPage;
         
-        $courses = $this->courseModel->getAll($perPage, $offset);
-        $totalCourses = $this->courseModel->count();
+        // Check if user is admin or teacher
+        $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+        $userId = $_SESSION['user_id'] ?? null;
+        
+        if ($isAdmin) {
+            // Admin sees all courses
+            $courses = $this->courseModel->getAll($perPage, $offset);
+            $totalCourses = $this->courseModel->count();
+        } else {
+            // Teacher sees only their own courses
+            $courses = $this->courseModel->getByTeacher($userId, $perPage, $offset);
+            // Count only teacher's courses
+            $totalCourses = count($this->courseModel->getByTeacher($userId));
+        }
+        
         $totalPages = ceil($totalCourses / $perPage);
         
         $this->render('teacher/courses/index', [

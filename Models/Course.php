@@ -123,8 +123,10 @@ class Course
      */
     public function getAll($limit = 0, $offset = 0)
     {
-        $sql = 'SELECT * FROM courses 
-             ORDER BY academic_year DESC, semester DESC, course_code';
+        $sql = 'SELECT c.*, u.name as teacher_name 
+             FROM courses c
+             LEFT JOIN users u ON c.teacher_id = u.id
+             ORDER BY c.academic_year DESC, c.semester DESC, c.course_code';
         
         if ($limit > 0) {
             $sql .= ' LIMIT :limit OFFSET :offset';
@@ -136,6 +138,35 @@ class Course
         }
         
         return $this->db->fetchAll($sql);
+    }
+    
+    /**
+     * Get courses by teacher ID
+     * 
+     * @param int $teacherId Teacher ID
+     * @param int $limit Limit number of results (0 = no limit)
+     * @param int $offset Offset for pagination
+     * @return array Array of courses
+     */
+    public function getByTeacher($teacherId, $limit = 0, $offset = 0)
+    {
+        $sql = 'SELECT * FROM courses 
+             WHERE teacher_id = :teacher_id
+             ORDER BY academic_year DESC, semester DESC, course_code';
+        
+        $params = [':teacher_id' => $teacherId];
+        
+        if ($limit > 0) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $stmt = $this->db->getConnection()->prepare($sql);
+            $stmt->bindValue(':teacher_id', $teacherId, \PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        }
+        
+        return $this->db->fetchAll($sql, $params);
     }
     
     /**

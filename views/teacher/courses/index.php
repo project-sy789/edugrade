@@ -70,6 +70,9 @@
                         <tr>
                             <th>รหัสวิชา</th>
                             <th>ชื่อวิชา</th>
+                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                <th>ครูผู้สอน</th>
+                            <?php endif; ?>
                             <th>ปีการศึกษา</th>
                             <th>ภาคเรียน</th>
                             <th style="text-align: center;">จัดการ</th>
@@ -80,6 +83,17 @@
                             <tr>
                                 <td><?php echo htmlspecialchars($course['course_code']); ?></td>
                                 <td><?php echo htmlspecialchars($course['course_name']); ?></td>
+                                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                    <td>
+                                        <?php 
+                                        if (!empty($course['teacher_name'])) {
+                                            echo htmlspecialchars($course['teacher_name']);
+                                        } else {
+                                            echo '<span style="color: var(--text-light);">ยังไม่ระบุ</span>';
+                                        }
+                                        ?>
+                                    </td>
+                                <?php endif; ?>
                                 <td><?php echo htmlspecialchars($course['academic_year']); ?></td>
                                 <td><?php echo htmlspecialchars($course['semester']); ?></td>
                                 <td style="text-align: center;">
