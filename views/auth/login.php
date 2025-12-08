@@ -28,7 +28,7 @@
                         <?php echo htmlspecialchars($schoolName); ?>
                     </h2>
                 <?php endif; ?>
-                <h1 class="login-title" style="margin: 0;"><?php echo siteName(); ?></h1>
+                <h1 class="login-title" style="margin: 0; font-size: 1.5rem;"><?php echo siteName(); ?></h1>
             </div>
             
             <?php
