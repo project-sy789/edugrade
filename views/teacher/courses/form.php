@@ -77,7 +77,8 @@
                     <!-- Show teacher selector when EDITING (admin can change, others can see) -->
                     <div class="form-group">
                         <label class="form-label" for="teacher_id">ครูผู้สอน</label>
-                        <select class="form-control" id="teacher_id" name="teacher_id">
+                        <select class="form-control" id="teacher_id" name="teacher_id" 
+                            onchange="console.log('Dropdown changed to:', this.value); alert('เปลี่ยนเป็น: ' + this.options[this.selectedIndex].text + ' (ID: ' + this.value + ')');">
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
                             // Get all teachers using Database singleton (already loaded)
