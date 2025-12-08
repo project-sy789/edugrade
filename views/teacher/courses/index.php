@@ -166,15 +166,12 @@
                 return;
             }
             
+            const formData = new FormData();
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
+            
             fetch('/teacher/courses/delete/' + id, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    csrf_token: document.querySelector('meta[name="csrf-token"]').content
-                })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
