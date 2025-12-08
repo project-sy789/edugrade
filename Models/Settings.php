@@ -53,12 +53,17 @@ class Settings
     public function set($key, $value)
     {
         try {
+            // Use MySQL syntax instead of SQLite
             $this->db->query(
-                'INSERT OR REPLACE INTO settings (setting_key, setting_value, updated_at) 
-                 VALUES (:key, :value, datetime("now"))',
+                'INSERT INTO settings (setting_key, setting_value, updated_at) 
+                 VALUES (:key, :value, NOW())
+                 ON DUPLICATE KEY UPDATE 
+                 setting_value = :value2, 
+                 updated_at = NOW()',
                 [
                     ':key' => $key,
-                    ':value' => $value
+                    ':value' => $value,
+                    ':value2' => $value
                 ]
             );
             

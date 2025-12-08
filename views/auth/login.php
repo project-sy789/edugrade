@@ -13,7 +13,12 @@
 <body>
     <div class="login-container">
         <div class="login-card">
-            <h1 class="login-title"><?php echo siteName(); ?></h1>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <?php if (logoPath()): ?>
+                    <img src="<?php echo logoPath(); ?>" alt="Logo" style="max-height: 80px; margin-bottom: 1rem;">
+                <?php endif; ?>
+                <h1 class="login-title" style="margin: 0;"><?php echo siteName(); ?></h1>
+            </div>
             
             <?php
             // Get flash message
