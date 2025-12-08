@@ -73,6 +73,29 @@
                     </div>
                 </div>
                 
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <div class="form-group">
+                        <label class="form-label" for="teacher_id">ครูผู้สอน</label>
+                        <select class="form-control" id="teacher_id" name="teacher_id">
+                            <option value="">ยังไม่ระบุครูผู้สอน</option>
+                            <?php
+                            // Get all teachers
+                            require_once __DIR__ . '/../../Models/User.php';
+                            $userModel = new \App\Models\User();
+                            $teachers = $userModel->getAll();
+                            foreach ($teachers as $teacher):
+                            ?>
+                                <option value="<?php echo $teacher['id']; ?>" 
+                                    <?php echo (isset($course) && $course['teacher_id'] == $teacher['id']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($teacher['name']); ?> 
+                                    (<?php echo $teacher['role'] === 'admin' ? 'Admin' : 'ครู'; ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <small style="color: var(--text-light);">เลือกครูที่รับผิดชอบวิชานี้</small>
+                    </div>
+                <?php endif; ?>
+                
                 <div style="display: flex; gap: 0.5rem; margin-top: 2rem;">
                     <button type="submit" class="btn btn-primary">บันทึก</button>
                     <a href="/teacher/courses" class="btn btn-secondary">ยกเลิก</a>

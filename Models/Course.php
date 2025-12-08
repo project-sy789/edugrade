@@ -36,7 +36,8 @@ class Course
             'course_code' => $data['course_code'],
             'course_name' => $data['course_name'],
             'academic_year' => $data['academic_year'],
-            'semester' => $data['semester']
+            'semester' => $data['semester'],
+            'teacher_id' => $data['teacher_id'] ?? null
         ]);
     }
     
@@ -59,7 +60,8 @@ class Course
             'course_code' => $data['course_code'],
             'course_name' => $data['course_name'],
             'academic_year' => $data['academic_year'],
-            'semester' => $data['semester']
+            'semester' => $data['semester'],
+            'teacher_id' => $data['teacher_id'] ?? null
         ], 'id = :id', [':id' => $id]);
     }
     
