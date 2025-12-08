@@ -17,6 +17,14 @@
                 <?php if (logoPath()): ?>
                     <img src="<?php echo logoPath(); ?>" alt="Logo" style="max-height: 80px; margin-bottom: 1rem;">
                 <?php endif; ?>
+                <?php 
+                $schoolName = getSetting('school_name');
+                if ($schoolName): 
+                ?>
+                    <h2 style="margin: 0 0 0.5rem 0; color: var(--primary-color); font-size: 1.5rem;">
+                        <?php echo htmlspecialchars($schoolName); ?>
+                    </h2>
+                <?php endif; ?>
                 <h1 class="login-title" style="margin: 0;"><?php echo siteName(); ?></h1>
             </div>
             
