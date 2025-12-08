@@ -183,6 +183,10 @@ try {
                 } else {
                     $courseController->edit($id);
                 }
+            } elseif ($subAction === 'delete') {
+                // Delete course route
+                $id = $parts[3] ?? null;
+                $courseController->delete($id);
             } elseif (is_numeric($subAction)) {
                 // Course ID routes
                 $courseId = $subAction;
