@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `grade_categories` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `course_id` INT NOT NULL,
     `category_name` VARCHAR(255) NOT NULL,
+    `max_score` DECIMAL(10,2) NOT NULL DEFAULT 100,
     `weight` DECIMAL(5,2) DEFAULT 0,
     `display_order` INT DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

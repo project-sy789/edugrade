@@ -77,6 +77,12 @@
                     <!-- Only show teacher selector when EDITING (not creating) -->
                     <div class="form-group">
                         <label class="form-label" for="teacher_id">ครูผู้สอน</label>
+                        <!-- Debug: Show current teacher_id -->
+                        <?php if (isset($course['teacher_id'])): ?>
+                            <small style="color: #999; display: block; margin-bottom: 0.5rem;">
+                                Debug: teacher_id = <?php echo var_export($course['teacher_id'], true); ?>
+                            </small>
+                        <?php endif; ?>
                         <select class="form-control" id="teacher_id" name="teacher_id">
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
@@ -87,7 +93,11 @@
                             foreach ($teachers as $teacher):
                             ?>
                                 <option value="<?php echo $teacher['id']; ?>" 
-                                    <?php echo (isset($course) && $course['teacher_id'] == $teacher['id']) ? 'selected' : ''; ?>>
+                                    <?php 
+                                    // Ensure both values are integers for comparison
+                                    $isSelected = isset($course['teacher_id']) && (int)$course['teacher_id'] === (int)$teacher['id'];
+                                    echo $isSelected ? 'selected' : ''; 
+                                    ?>>
                                     <?php echo htmlspecialchars($teacher['name']); ?> 
                                     (<?php echo $teacher['role'] === 'admin' ? 'Admin' : 'ครู'; ?>)
                                 </option>
