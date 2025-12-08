@@ -73,8 +73,8 @@
                     </div>
                 </div>
                 
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && isset($course)): ?>
-                    <!-- Only show teacher selector when EDITING (not creating) -->
+                <?php if (isset($course)): ?>
+                    <!-- Show teacher selector when EDITING (admin can change, others can see) -->
                     <div class="form-group">
                         <label class="form-label" for="teacher_id">ครูผู้สอน</label>
                         <!-- Debug: Show current teacher_id -->
@@ -83,7 +83,8 @@
                                 Debug: teacher_id = <?php echo var_export($course['teacher_id'], true); ?>
                             </small>
                         <?php endif; ?>
-                        <select class="form-control" id="teacher_id" name="teacher_id">
+                        <select class="form-control" id="teacher_id" name="teacher_id" 
+                            <?php echo (isset($_SESSION['role']) && $_SESSION['role'] !== 'admin') ? 'disabled' : ''; ?>>
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
                             // Get all teachers
@@ -110,7 +111,11 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <small style="color: var(--text-light);">เปลี่ยนครูที่รับผิดชอบวิชานี้</small>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] !== 'admin'): ?>
+                            <small style="color: var(--text-light);">เฉพาะ admin เท่านั้นที่สามารถเปลี่ยนครูผู้สอนได้</small>
+                        <?php else: ?>
+                            <small style="color: var(--text-light);">เปลี่ยนครูที่รับผิดชอบวิชานี้</small>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
                 
