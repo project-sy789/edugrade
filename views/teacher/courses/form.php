@@ -87,10 +87,10 @@
                             <?php echo (isset($_SESSION['role']) && $_SESSION['role'] !== 'admin') ? 'disabled' : ''; ?>>
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
-                            // Get all teachers
-                            require_once __DIR__ . '/../../models/User.php';
-                            $userModel = new \App\Models\User();
-                            $teachers = $userModel->getAll();
+                            // Get all teachers using Database class directly
+                            require_once __DIR__ . '/../../models/Database.php';
+                            $db = \App\Models\Database::getInstance();
+                            $teachers = $db->fetchAll('SELECT id, name, role FROM users ORDER BY name');
                             
                             // Debug: Show teacher count
                             echo '<!-- DEBUG: Found ' . count($teachers) . ' teachers -->';
