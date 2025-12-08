@@ -60,6 +60,29 @@
                     ยังไม่มีนักเรียนลงทะเบียน <a href="/teacher/courses/<?php echo $course['id']; ?>/enroll">คลิกที่นี่เพื่อลงทะเบียน</a>
                 </div>
             <?php else: ?>
+                <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1rem; gap: 0.5rem;">
+                    <label for="classroomFilter" style="margin: 0; font-weight: normal;">กรองตามห้อง:</label>
+                    <select id="classroomFilter" class="form-control" style="width: auto; min-width: 150px;" onchange="filterByClassroom()">
+                        <option value="">แสดงทั้งหมด</option>
+                        <?php
+                        // Get unique classrooms
+                        $classrooms = [];
+                        foreach ($students as $s) {
+                            $key = $s['class_level'] . '/' . $s['classroom'];
+                            if (!in_array($key, $classrooms)) {
+                                $classrooms[] = $key;
+                            }
+                        }
+                        sort($classrooms);
+                        foreach ($classrooms as $classroom):
+                        ?>
+                            <option value="<?php echo htmlspecialchars($classroom); ?>">
+                                <?php echo htmlspecialchars($classroom); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span id="studentCount" style="color: #666; font-size: 0.9rem;"></span>
+                </div>
                 <div style="overflow-x: auto;">
                     <table class="grade-table">
                         <thead>
@@ -74,8 +97,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($students as $student): ?>
-                                <tr>
+                            <?php foreach ($students as $student): 
+                                $classroomKey = $student['class_level'] . '/' . $student['classroom'];
+                            ?>
+                                <tr class="student-row" data-classroom="<?php echo htmlspecialchars($classroomKey); ?>">
                                     <td class="sticky-col"><?php echo htmlspecialchars($student['student_code']); ?></td>
                                     <td class="sticky-col" style="left: 100px; text-align: left;"><?php echo htmlspecialchars($student['name']); ?></td>
                                     <?php foreach ($categories as $category): 
@@ -134,6 +159,31 @@
                 console.error('Error:', error);
             });
         }
+        
+        function filterByClassroom() {
+            const filter = document.getElementById('classroomFilter').value;
+            const rows = document.querySelectorAll('.student-row');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const classroom = row.getAttribute('data-classroom');
+                if (filter === '' || classroom === filter) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update count display
+            const countSpan = document.getElementById('studentCount');
+            countSpan.textContent = `(${visibleCount} คน)`;
+        }
+        
+        // Initialize count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            filterByClassroom();
+        });
     </script>
 </body>
 </html>

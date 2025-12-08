@@ -455,6 +455,12 @@
                     return;
                 }
                 
+                // Skip if student row is hidden (filtered out)
+                const row = select.closest('tr');
+                if (row && row.style.display === 'none') {
+                    return;
+                }
+                
                 console.log(`[${index + 1}/${selects.length}] Saving student ${studentId}: ${status}`);
                 
                 const formData = new FormData();
