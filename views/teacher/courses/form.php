@@ -73,7 +73,8 @@
                     </div>
                 </div>
                 
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && isset($course)): ?>
+                    <!-- Only show teacher selector when EDITING (not creating) -->
                     <div class="form-group">
                         <label class="form-label" for="teacher_id">ครูผู้สอน</label>
                         <select class="form-control" id="teacher_id" name="teacher_id">
@@ -92,7 +93,7 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <small style="color: var(--text-light);">เลือกครูที่รับผิดชอบวิชานี้</small>
+                        <small style="color: var(--text-light);">เปลี่ยนครูที่รับผิดชอบวิชานี้</small>
                     </div>
                 <?php endif; ?>
                 

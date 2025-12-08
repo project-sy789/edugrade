@@ -88,7 +88,8 @@ class CourseController extends BaseController
                 'course_code' => $this->post('course_code'),
                 'course_name' => $this->post('course_name'),
                 'academic_year' => $this->post('academic_year'),
-                'semester' => $this->post('semester')
+                'semester' => $this->post('semester'),
+                'teacher_id' => $this->post('teacher_id') ?: null
             ];
             
             $this->courseModel->create($data);
@@ -137,7 +138,8 @@ class CourseController extends BaseController
                 'course_code' => $this->post('course_code'),
                 'course_name' => $this->post('course_name'),
                 'academic_year' => $this->post('academic_year'),
-                'semester' => $this->post('semester')
+                'semester' => $this->post('semester'),
+                'teacher_id' => $this->post('teacher_id') ?: null
             ];
             
             $this->courseModel->update($id, $data);
