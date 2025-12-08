@@ -77,28 +77,18 @@
                     <!-- Show teacher selector when EDITING (admin can change, others can see) -->
                     <div class="form-group">
                         <label class="form-label" for="teacher_id">ครูผู้สอน</label>
-                        <select class="form-control" id="teacher_id" name="teacher_id" 
-                            onchange="console.log('Dropdown changed to:', this.value); alert('เปลี่ยนเป็น: ' + this.options[this.selectedIndex].text + ' (ID: ' + this.value + ')');">
+                        <select class="form-control" id="teacher_id" name="teacher_id">
                             <option value="">ยังไม่ระบุครูผู้สอน</option>
                             <?php
                             // Get all teachers using Database singleton (already loaded)
                             $db = \App\Models\Database::getInstance();
                             $teachers = $db->fetchAll('SELECT id, name, role FROM users ORDER BY name');
                             
-                            // Debug: Show teacher count
-                            echo '<!-- DEBUG: Found ' . count($teachers) . ' teachers -->';
-                            echo '<!-- DEBUG: Course teacher_id = ' . ($course['teacher_id'] ?? 'NOT SET') . ' -->';
-                            
                             foreach ($teachers as $teacher):
+                                $isSelected = isset($course['teacher_id']) && (int)$course['teacher_id'] === (int)$teacher['id'];
                             ?>
                                 <option value="<?php echo $teacher['id']; ?>" 
-                                    <?php 
-                                    // Ensure both values are integers for comparison
-                                    $isSelected = isset($course['teacher_id']) && (int)$course['teacher_id'] === (int)$teacher['id'];
-                                    echo $isSelected ? 'selected' : ''; 
-                                    // Debug output
-                                    echo '<!-- Teacher ID: ' . $teacher['id'] . ' | Match: ' . ($isSelected ? 'YES' : 'NO') . ' -->';
-                                    ?>>
+                                    <?php echo $isSelected ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($teacher['name']); ?> 
                                     (<?php echo $teacher['role'] === 'admin' ? 'Admin' : 'ครู'; ?>)
                                 </option>
@@ -112,35 +102,7 @@
                     </div>
                 <?php endif; ?>
                 
-                <!-- DEBUG: Show form data before submit -->
-                <div style="background: #f0f0f0; padding: 1rem; margin: 1rem 0; border: 1px solid #ccc;">
-                    <strong>DEBUG INFO:</strong><br>
-                    Course ID: <?php echo $course['id'] ?? 'N/A'; ?><br>
-                    Current teacher_id in DB: <?php echo $course['teacher_id'] ?? 'NULL'; ?><br>
-                    <script>
-                    // Log form data on submit
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const form = document.querySelector('form');
-                        if (form) {
-                            form.addEventListener('submit', function(e) {
-                                const teacherSelect = document.getElementById('teacher_id');
-                                const value = teacherSelect ? teacherSelect.value : 'NOT FOUND';
-                                const name = teacherSelect ? teacherSelect.name : 'NOT FOUND';
-                                
-                                console.log('=== FORM SUBMIT DEBUG ===');
-                                console.log('Teacher select value:', value);
-                                console.log('Teacher select name:', name);
-                                
-                                // Show alert with value
-                                alert('DEBUG: teacher_id value = "' + value + '"\nname = "' + name + '"');
-                                
-                                // Form will submit after clicking OK
-                            });
-                        }
-                    });
-                    </script>
-                </div>
-                
+
                 <div style="display: flex; gap: 0.5rem; margin-top: 2rem;">
                     <button type="submit" class="btn btn-primary">บันทึก</button>
                     <a href="/teacher/courses" class="btn btn-secondary">ยกเลิก</a>
