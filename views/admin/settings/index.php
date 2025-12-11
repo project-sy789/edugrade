@@ -150,7 +150,6 @@
                         <button type="submit" class="btn btn-primary">📤 อัปโหลด Favicon</button>
                     </div>
                 </div>
-                </div>
             </form>
             
             <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
