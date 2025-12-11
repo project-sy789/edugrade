@@ -17,6 +17,7 @@ class ClubController extends BaseController
     private $clubModel;
     private $userModel;
     private $studentModel;
+    private $settings;
     
     public function __construct()
     {
