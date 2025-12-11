@@ -150,9 +150,168 @@
                         <button type="submit" class="btn btn-primary">📤 อัปโหลด Favicon</button>
                     </div>
                 </div>
+                </div>
+            </form>
+            
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+            
+            <!-- Club Registration Period Settings -->
+            <form method="POST" action="/admin/settings/update-club-registration" id="clubRegistrationForm">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION[CSRF_TOKEN_NAME] ?? ''; ?>">
+                
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">🎯 การลงทะเบียนชุมนุม</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">โหมดการควบคุม</label>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="club_registration_mode" value="manual" 
+                                   <?php echo ($settings['club_registration_mode'] ?? 'manual') === 'manual' ? 'checked' : ''; ?>
+                                   onchange="toggleRegistrationMode()">
+                            <span style="margin-left: 0.5rem;">📝 Manual (เปิด-ปิดด้วยมือ)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="club_registration_mode" value="automatic" 
+                                   <?php echo ($settings['club_registration_mode'] ?? 'manual') === 'automatic' ? 'checked' : ''; ?>
+                                   onchange="toggleRegistrationMode()">
+                            <span style="margin-left: 0.5rem;">⏰ Automatic (ตามกำหนดเวลา)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Manual Mode Controls -->
+                <div id="manualControls" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">สถานะการรับสมัคร</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <label class="switch">
+                                <input type="checkbox" name="club_registration_manual_status" value="1"
+                                       <?php echo ($settings['club_registration_manual_status'] ?? '0') === '1' ? 'checked' : ''; ?>>
+                                <span class="slider"></span>
+                            </label>
+                            <span id="statusText" style="font-weight: 500;">
+                                <?php echo ($settings['club_registration_manual_status'] ?? '0') === '1' ? '🟢 เปิดรับสมัคร' : '🔴 ปิดรับสมัคร'; ?>
+                            </span>
+                        </div>
+                        <small style="color: var(--text-light);">เปิด/ปิดการลงทะเบียนชุมนุมได้ทันที</small>
+                    </div>
+                </div>
+                
+                <!-- Automatic Mode Controls -->
+                <div id="automaticControls" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label" for="club_registration_start">วันเวลาเริ่มต้น</label>
+                        <input type="datetime-local" class="form-control" id="club_registration_start" 
+                               name="club_registration_start" 
+                               value="<?php echo isset($settings['club_registration_start']) ? date('Y-m-d\TH:i', strtotime($settings['club_registration_start'])) : ''; ?>">
+                        <small style="color: var(--text-light);">นักเรียนจะสามารถลงทะเบียนได้ตั้งแต่เวลานี้</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="club_registration_end">วันเวลาสิ้นสุด</label>
+                        <input type="datetime-local" class="form-control" id="club_registration_end" 
+                               name="club_registration_end" 
+                               value="<?php echo isset($settings['club_registration_end']) ? date('Y-m-d\TH:i', strtotime($settings['club_registration_end'])) : ''; ?>">
+                        <small style="color: var(--text-light);">นักเรียนจะไม่สามารถลงทะเบียนได้หลังจากเวลานี้</small>
+                    </div>
+                </div>
+                
+                <!-- Current Status Display -->
+                <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <strong>สถานะปัจจุบัน:</strong>
+                    <?php
+                    $regStatus = $this->settings->getClubRegistrationStatus();
+                    $statusColor = $regStatus['open'] ? 'var(--success)' : 'var(--danger)';
+                    $statusIcon = $regStatus['open'] ? '✅' : '❌';
+                    ?>
+                    <div style="margin-top: 0.5rem; color: <?php echo $statusColor; ?>; font-weight: 500;">
+                        <?php echo $statusIcon . ' ' . htmlspecialchars($regStatus['message']); ?>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">💾 บันทึกการตั้งค่า</button>
             </form>
         </div>
     </div>
+    
+    <style>
+    /* Toggle Switch Styles */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: var(--success);
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    </style>
+    
+    <script>
+    // Toggle between manual and automatic mode
+    function toggleRegistrationMode() {
+        const mode = document.querySelector('input[name="club_registration_mode"]:checked').value;
+        const manualControls = document.getElementById('manualControls');
+        const automaticControls = document.getElementById('automaticControls');
+        
+        if (mode === 'manual') {
+            manualControls.style.display = 'block';
+            automaticControls.style.display = 'none';
+        } else {
+            manualControls.style.display = 'none';
+            automaticControls.style.display = 'block';
+        }
+    }
+    
+    // Update status text when toggle changes
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleRegistrationMode();
+        
+        const statusToggle = document.querySelector('input[name="club_registration_manual_status"]');
+        const statusText = document.getElementById('statusText');
+        
+        if (statusToggle && statusText) {
+            statusToggle.addEventListener('change', function() {
+                statusText.textContent = this.checked ? '🟢 เปิดรับสมัคร' : '🔴 ปิดรับสมัคร';
+            });
+        }
+    });
+    </script>
     
     <script src="/js/main.js"></script>
 </body>

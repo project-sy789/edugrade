@@ -291,6 +291,8 @@ try {
             $settingsController->uploadLogo();
         } elseif ($subAction === 'upload-favicon') {
             $settingsController->uploadFavicon();
+        } elseif ($subAction === 'update-club-registration') {
+            $settingsController->updateClubRegistration();
         }
         exit;
     }

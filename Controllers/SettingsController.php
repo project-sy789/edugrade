@@ -159,4 +159,54 @@ class SettingsController extends BaseController
             $this->redirect('/admin/settings');
         }
     }
+    
+    /**
+     * Update club registration settings
+     */
+    public function updateClubRegistration()
+    {
+        $this->requireAdmin();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/admin/settings');
+            return;
+        }
+        
+        $this->requireCsrfToken();
+        
+        try {
+            $mode = $this->post('club_registration_mode', 'manual');
+            
+            // Save mode
+            $this->settingsModel->set('club_registration_mode', $mode);
+            
+            if ($mode === 'manual') {
+                // Manual mode: save status
+                $status = $this->post('club_registration_manual_status') ? '1' : '0';
+                $this->settingsModel->set('club_registration_manual_status', $status);
+            } else {
+                // Automatic mode: save start and end dates
+                $start = $this->post('club_registration_start');
+                $end = $this->post('club_registration_end');
+                
+                // Convert to MySQL datetime format if provided
+                if ($start) {
+                    $start = date('Y-m-d H:i:s', strtotime($start));
+                    $this->settingsModel->set('club_registration_start', $start);
+                }
+                
+                if ($end) {
+                    $end = date('Y-m-d H:i:s', strtotime($end));
+                    $this->settingsModel->set('club_registration_end', $end);
+                }
+            }
+            
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'บันทึกการตั้งค่าการลงทะเบียนชุมนุมสำเร็จ'];
+            $this->redirect('/admin/settings');
+            
+        } catch (\Exception $e) {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()];
+            $this->redirect('/admin/settings');
+        }
+    }
 }

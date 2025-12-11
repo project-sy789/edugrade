@@ -52,6 +52,15 @@
                 </p>
             </div>
             
+            <!-- Registration Status Banner -->
+            <?php if (isset($registrationStatus)): ?>
+                <div class="alert alert-<?php echo $registrationStatus['open'] ? 'success' : 'warning'; ?>" style="margin: 1rem 1.5rem;">
+                    <strong><?php echo $registrationStatus['open'] ? '✅ เปิดรับสมัครชุมนุม' : '⚠️ ปิดรับสมัครชุมนุม'; ?></strong>
+                    <br>
+                    <small><?php echo htmlspecialchars($registrationStatus['message']); ?></small>
+                </div>
+            <?php endif; ?>
+            
             <?php if ($myClub): ?>
                 <div class="alert alert-success">
                     <strong>✅ คุณลงทะเบียนชุมนุมแล้ว:</strong> <?php echo htmlspecialchars($myClub['club_name']); ?>
@@ -93,6 +102,8 @@
                                 <span class="btn btn-secondary" style="cursor: default;">ลงทะเบียนชุมนุมอื่นแล้ว</span>
                             <?php elseif ($club['available_seats'] <= 0): ?>
                                 <span class="btn btn-secondary" style="cursor: default;">เต็มแล้ว</span>
+                            <?php elseif (!$registrationStatus['open']): ?>
+                                <span class="btn btn-secondary" style="cursor: default;">ปิดรับสมัคร</span>
                             <?php else: ?>
                                 <button onclick="enrollClub(<?php echo $club['id']; ?>)" class="btn btn-primary" id="enroll-btn-<?php echo $club['id']; ?>">ลงทะเบียน</button>
                             <?php endif; ?>
