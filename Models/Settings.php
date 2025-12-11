@@ -86,6 +86,76 @@ class Settings
     }
     
     /**
+     * Check if club registration is currently open
+     * 
+     * @return bool True if registration is open
+     */
+    public function isClubRegistrationOpen()
+    {
+        $mode = $this->get('club_registration_mode') ?: 'manual';
+        
+        if ($mode === 'manual') {
+            // Manual mode: check manual status
+            return (bool)$this->get('club_registration_manual_status');
+        }
+        
+        // Automatic mode: check date/time range
+        $start = $this->get('club_registration_start');
+        $end = $this->get('club_registration_end');
+        $now = date('Y-m-d H:i:s');
+        
+        if ($start && $now < $start) {
+            return false;
+        }
+        
+        if ($end && $now > $end) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Get club registration status message
+     * 
+     * @return array Status info with 'open', 'message', 'start', 'end'
+     */
+    public function getClubRegistrationStatus()
+    {
+        $mode = $this->get('club_registration_mode') ?: 'manual';
+        $isOpen = $this->isClubRegistrationOpen();
+        
+        $status = [
+            'open' => $isOpen,
+            'mode' => $mode,
+            'message' => '',
+            'start' => null,
+            'end' => null
+        ];
+        
+        if ($mode === 'manual') {
+            $status['message'] = $isOpen ? 'เปิดรับสมัครชุมนุม' : 'ปิดรับสมัครชุมนุม';
+        } else {
+            $start = $this->get('club_registration_start');
+            $end = $this->get('club_registration_end');
+            $now = date('Y-m-d H:i:s');
+            
+            $status['start'] = $start;
+            $status['end'] = $end;
+            
+            if ($start && $now < $start) {
+                $status['message'] = 'การลงทะเบียนจะเปิดในวันที่ ' . date('d/m/Y H:i', strtotime($start));
+            } elseif ($end && $now > $end) {
+                $status['message'] = 'การลงทะเบียนปิดแล้วเมื่อวันที่ ' . date('d/m/Y H:i', strtotime($end));
+            } else {
+                $status['message'] = 'เปิดรับสมัครถึงวันที่ ' . date('d/m/Y H:i', strtotime($end));
+            }
+        }
+        
+        return $status;
+    }
+    
+    /**
      * Upload file (logo or favicon)
      * 
      * @param array $file Uploaded file from $_FILES

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Club;
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Settings;
 
 /**
  * Club Controller
@@ -22,6 +23,7 @@ class ClubController extends BaseController
         $this->clubModel = new Club();
         $this->userModel = new User();
         $this->studentModel = new Student();
+        $this->settings = new Settings();
     }
     
     // ==================== ADMIN FUNCTIONS ====================
@@ -404,11 +406,15 @@ class ClubController extends BaseController
         // Get student's current club
         $myClub = $this->clubModel->getStudentClub($studentId, $academicYear, $semester);
         
+        // Get registration status
+        $registrationStatus = $this->settings->getClubRegistrationStatus();
+        
         $this->render('student/clubs/index', [
             'clubs' => $clubs,
             'myClub' => $myClub,
             'academicYear' => $academicYear,
-            'semester' => $semester
+            'semester' => $semester,
+            'registrationStatus' => $registrationStatus
         ]);
     }
     
@@ -421,6 +427,13 @@ class ClubController extends BaseController
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/student/clubs');
+            return;
+        }
+        
+        // Check if registration is open
+        if (!$this->settings->isClubRegistrationOpen()) {
+            $status = $this->settings->getClubRegistrationStatus();
+            echo json_encode(['success' => false, 'message' => $status['message']]);
             return;
         }
         
