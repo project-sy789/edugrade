@@ -1,6 +1,9 @@
 -- Migration: Add Club Registration Period Settings
 -- Date: 2025-12-11
 
+-- Select database
+USE subyaisite_edugrade;
+
 -- Add settings for club registration period control
 INSERT INTO settings (setting_key, setting_value, created_at, updated_at) VALUES
 ('club_registration_mode', 'manual', NOW(), NOW()),
