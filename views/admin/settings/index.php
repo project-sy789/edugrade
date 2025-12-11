@@ -220,7 +220,7 @@
                 <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
                     <strong>สถานะปัจจุบัน:</strong>
                     <?php
-                    $regStatus = $this->settings->getClubRegistrationStatus();
+                    $regStatus = $settingsModel->getClubRegistrationStatus();
                     $statusColor = $regStatus['open'] ? 'var(--success)' : 'var(--danger)';
                     $statusIcon = $regStatus['open'] ? '✅' : '❌';
                     ?>

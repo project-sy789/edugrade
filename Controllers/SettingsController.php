@@ -18,9 +18,6 @@ class SettingsController extends BaseController
         $this->settingsModel = new Settings();
     }
     
-    /**
-     * Show settings page
-     */
     public function index()
     {
         $this->requireAdmin();
@@ -28,7 +25,8 @@ class SettingsController extends BaseController
         $settings = $this->settingsModel->getAll();
         
         $this->render('admin/settings/index', [
-            'settings' => $settings
+            'settings' => $settings,
+            'settingsModel' => $this->settingsModel  // Pass model instance to view
         ]);
     }
     
